@@ -17,6 +17,42 @@ import org.springframework.context.annotation.Bean;
 
 import com.thoughtworks.xstream.XStream;
 
+public class FoobarXStream {
+
+    private XStream xstream = new XStream();
+
+    public FoobarXStream() {
+        
+        try {
+            // ruleid: fromXML
+            Object pq = xstream.fromXML(read);
+        } catch (Exception e) {
+            System.out.println(read);
+            System.out.println(e);
+        }
+    }
+
+}
+
+public class FoobarXStreamAgain {
+
+    private XStream xstream;
+
+    public FoobarXStreamAgain() {
+        xstream = new XStream();
+    }
+
+    public void doSmth() {
+        try {
+            // ruleid: fromXML
+            Object pq = xstream.fromXML(read);
+        } catch (Exception e) {
+            System.out.println(read);
+            System.out.println(e);
+        }
+    }
+}
+
 @SpringBootApplication
 public class Application {
 

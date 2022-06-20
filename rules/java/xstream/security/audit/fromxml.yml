@@ -11,23 +11,7 @@ rules:
         - JVM
         - XML
         - XStream
-    patterns:
-      - pattern-inside: |
-          import com.thoughtworks.xstream.XStream;
-          ...
-      - pattern-either:
-          - patterns:
-              - pattern-inside: |
-                  $TYPE $XSTREAM = new com.thoughtworks.xstream.XStream(...);
-                  ...
-              - pattern: $XSTREAM.fromXML(...);
-          - pattern-inside: |
-              class $CLASS {
-                ...
-                $TYPE $XSTREAM = new com.thoughtworks.xstream.XStream(...);
-                ...
-              }
-          - pattern: $XSTREAM.fromXML(...);
+    pattern: (com.thoughtworks.xstream.XStream $XSTREAM).fromXML(...);
     message: >-
       XStream XML Deserialzation: Check that they have correctly set an allow-list and if an attacker can control input.
     severity: WARNING
