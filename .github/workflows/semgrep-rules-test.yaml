@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run test
-        id: semgrep-test
+        id: semgrep-tests
         uses: returntocorp/semgrep-rules-test-action@master
       - uses: actions/upload-artifact@v1
         if: always()
         with:
           name: tests
-          path: ${{ steps.test.outputs.output_dir }}
+          path: ${{ steps.semgrep-tests.outputs.output_dir }}
