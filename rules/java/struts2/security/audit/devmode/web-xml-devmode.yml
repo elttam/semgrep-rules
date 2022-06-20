@@ -1,0 +1,33 @@
+rules:
+  - id: web-xml-devmode
+    message: >-
+      web.xml devMode = $MODE
+    severity: WARNING
+    # There is no proper tree-sitter-xml
+    # Only this https://github.com/unhammer/tree-sitter-xml
+    languages: [generic]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    paths:
+      include:
+        - web.xml
+        # unit test
+        - web-xml-devmode.xml
+    patterns:
+      - pattern: |
+          <init-param>
+              ...
+              <param-name>struts.devMode</param-name>
+              ...
+              <param-value>$MODE</param-value>
+              ...
+          </init-param>
+      # XXX Is this coerced or can in only be "true" or "false"
+      # XXX Is it case insensitive?
+      - metavariable-regex:
+          metavariable: $MODE
+          regex: >-
+            (true|1)

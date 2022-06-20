@@ -1,0 +1,26 @@
+rules:
+  - id: rest-RequestMapping
+    metadata:
+      docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    pattern-either:
+      - pattern: |
+          @org.springframework.web.bind.annotation.RequestMapping(...)
+          class $CLASS
+      - pattern: |
+          @org.springframework.web.bind.annotation.RequestMapping(...)
+          $RETURN $METHOD(...)
+      # unqualified
+      - pattern: |
+          @RequestMapping(...)
+          class $CLASS
+      - pattern: |
+          @RequestMapping(...)
+          $RETURN $METHOD(...)
+    message: >-
+      Entrypoint RequestMapping class $CLASS or method $METHOD
+    severity: INFO
+    languages: [java]

@@ -1,0 +1,36 @@
+rules:
+  - id: jax-rs.httpmethod
+    message: >-
+      JAX-RS @HttpMethod HTTP Method Annotation $INTERFACE, $TARGET annotated
+      with this will handle $METHOD
+    severity: INFO
+    languages: [java]
+    metadata:
+      docs:
+        - https://docs.oracle.com/javaee/7/api/index.html?javax/ws/rs/HttpMethod.html
+      category: security
+      technology:
+        - JVM
+        - jax-rs
+    pattern-either:
+      # partial statements for interaces not supported unlike class, so need
+      # the `{ ... }` to parse
+      - pattern: |
+          @jakarta.ws.rs.HttpMethod($METHOD)
+          @java.lang.annotation.Target($TARGET)
+          interface $INTERFACE {
+            ...
+          }
+      - pattern: |
+          @javax.ws.rs.HttpMethod($METHOD)
+          @java.lang.annotation.Target($TARGET)
+          interface $INTERFACE {
+            ...
+          }
+      # Unqualified
+      - pattern: |
+          @HttpMethod($METHOD)
+          @java.lang.annotation.Target($TARGET)
+          interface $INTERFACE {
+            ...
+          }

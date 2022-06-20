@@ -1,0 +1,21 @@
+rules:
+  - id: struts-xml-action-name
+    message: >-
+      struts.xml action $...NAME
+    severity: INFO
+    # There is no proper tree-sitter-xml
+    # Only this https://github.com/unhammer/tree-sitter-xml
+    languages: [generic]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    paths:
+      include:
+        - '*.xml'
+    pattern-either:
+      - pattern: |
+          <action ... name="$...NAME"
+      - pattern: |
+          <action ... name='$...NAME'

@@ -1,0 +1,28 @@
+rules:
+  - id: rest-Order
+    metadata:
+      docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/annotation/Order.html
+      similar-to: Java @Priority
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    # TODO can also be applied to fields
+    pattern-either:
+      - pattern: |
+          @org.springframework.core.annotation.Order(...)
+          class $CLASS
+      - pattern: |
+          @org.springframework.core.annotation.Order(...)
+          $RETURN $METHOD(...)
+      # unqualified
+      - pattern: |
+          @Order(...)
+          class $CLASS
+      - pattern: |
+          @Order(...)
+          $RETURN $METHOD(...)
+    message: >-
+      @Order $CLASS / $METHOD
+    severity: INFO
+    languages: [java]

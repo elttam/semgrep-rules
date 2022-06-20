@@ -1,0 +1,32 @@
+rules:
+  - id: type-resolver-override
+    metadata:
+      cwe: 'CWE-502: Deserialization of Untrusted Data'
+      owasp: 'A8: Insecure Deserialization'
+      docs:
+        - https://github.com/mbechler/marshalsec/blob/master/marshalsec.pdf
+        - https://www.nccgroup.trust/globalassets/our-research/us/whitepapers/2018/jackson_deserialization.pdf
+        - https://medium.com/@cowtowncoder/on-jackson-cves-dont-panic-here-is-what-you-need-to-know-54cd0d6e8062
+      category: security
+      technology:
+        - jackson
+        - jackson-databind
+        - spring
+        - spring-boot
+        - spring-framework
+        - JSON
+    patterns:
+      - pattern-inside: |
+          import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
+          ...
+      - pattern-either:
+          - pattern: |
+              TypeResolverBuilder $X;
+          - pattern: |
+              TypeResolverBuilder $X = ...;
+    message: >-
+      $X
+      Jackson Polymorphic Typing: Polymorphic typing may have been introduced through overriding the default Jackson type
+      resolver.
+    severity: INFO
+    languages: [java]

@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: test
+spec:
+  template:
+    spec:
+      hostNetwork: true
+      containers:
+        # ruleid: privileged-container
+        - name: test
+          image: test/test
+          securityContext:
+            privileged: true

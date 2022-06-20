@@ -1,0 +1,18 @@
+rules:
+  # Should this be moved java/lang/security/audit/? Spring apps use it.
+  - id: java.servlet.filter
+    metadata:
+      docs: https://docs.oracle.com/javaee/7/api/index.html?javax/servlet/Filter.html
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    pattern-either:
+      - pattern: |
+          class $CLASS implements javax.servlet.Filter
+      - pattern: |
+          class $CLASS implements Filter
+    message: >-
+      class $CLASS implements Filter
+    severity: INFO
+    languages: [java]

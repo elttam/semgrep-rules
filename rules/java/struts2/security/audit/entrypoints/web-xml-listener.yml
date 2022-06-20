@@ -1,0 +1,30 @@
+rules:
+  - id: web-xml-listener
+    message: >-
+      web.xml Struts2
+      listener-class $...LISTENER_CLASS
+    severity: INFO
+    # There is no proper tree-sitter-xml
+    # Only this https://github.com/unhammer/tree-sitter-xml
+    languages: [generic]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    paths:
+      include:
+        - web.xml
+        # unit test
+        - web-xml-listener.xml
+    patterns:
+      - pattern: |
+          <listener>
+              ...
+              <listener-class>$...LISTENER_CLASS</listener-class>
+              ...
+          </listener>
+      - metavariable-regex:
+          metavariable: $...LISTENER_CLASS
+          regex: >-
+            org\.apache\.struts2.*

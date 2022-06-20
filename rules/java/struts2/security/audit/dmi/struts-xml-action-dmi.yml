@@ -1,0 +1,30 @@
+rules:
+  - id: struts-xml-action-dmi
+    message: >-
+      struts.xml action $...NAME either using Dynamic Method Invocation or
+      Wildcard Method feature
+    severity: WARNING
+    # There is no proper tree-sitter-xml
+    # Only this https://github.com/unhammer/tree-sitter-xml
+    languages: [generic]
+    metadata:
+      docs:
+        - https://struts.apache.org/core-developers/action-configuration.html#dynamic-method-invocation
+        - https://struts.apache.org/core-developers/action-configuration.html#wildcard-method
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    paths:
+      include:
+        - struts*.xml
+    patterns:
+      - pattern-either:
+          - pattern: |
+              <action ... name="$...NAME"
+          - pattern: |
+              <action ... name='$...NAME'
+      - metavariable-regex:
+          metavariable: $...NAME
+          regex: >-
+            .*!.*

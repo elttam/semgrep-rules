@@ -1,0 +1,19 @@
+rules:
+  - id: rest-RestController
+    metadata:
+      docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RestController.html
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    pattern-either:
+      - pattern: |
+          @org.springframework.web.bind.annotation.RestController(...)
+          class $CLASS
+      - pattern: |
+          @RestController(...)
+          class $CLASS
+    message: >-
+      RestController $CLASS
+    severity: INFO
+    languages: [java]

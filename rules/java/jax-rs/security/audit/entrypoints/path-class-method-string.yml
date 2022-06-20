@@ -1,0 +1,37 @@
+rules:
+  ## Note this is looking for string/string, and quoting "string/string".
+  - id: path method string
+    message: >-
+      JAX-RS Path "$PATH1/$PATH2" endpoint $CLASS.$FUNC()
+    severity: INFO
+    languages: [java]
+    metadata:
+      docs:
+        - https://docs.oracle.com/javaee/7/api/index.html?javax/ws/rs/Path.html
+      category: security
+      technology:
+        - JVM
+        - jax-rs
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              @jakarta.ws.rs.Path("$PATH1")
+              class $CLASS {
+                ...
+              }
+          - pattern-inside: |
+              @javax.ws.rs.Path("$PATH1")
+              class $CLASS {
+                ...
+              }
+      - pattern-either:
+          - pattern: |
+              @jakarta.ws.rs.Path("$PATH2")
+              $RETURNTYPE $FUNC (...) {
+                ...
+              }
+          - pattern: |
+              @javax.ws.rs.Path("$PATH2")
+              $RETURNTYPE $FUNC (...) {
+                ...
+              }

@@ -1,0 +1,49 @@
+rules:
+  - id: struts-xml-devmode
+    message: >-
+      struts.xml devMode = "$...MODE"
+    severity: WARNING
+    # There is no proper tree-sitter-xml
+    # Only this https://github.com/unhammer/tree-sitter-xml
+    languages: [generic]
+    metadata:
+      docs:
+        - https://struts.apache.org/core-developers/constant-configuration
+        - https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    paths:
+      include:
+        - struts*.xml
+    patterns:
+      - pattern-either:
+          - pattern: |
+              <constant ... name='struts.devMode' ... value='$...MODE' ... />
+          - pattern: |
+              <constant ... name='struts.devMode' ... value="$...MODE" ... />
+          - pattern: |
+              <constant ... name="struts.devMode" ... value='$...MODE' ... />
+          - pattern: |
+              <constant ... name="struts.devMode" ... value="$...MODE" ... />
+          - pattern: |
+              <constant ... value='$...MODE' ... name='struts.devMode' ... />
+          - pattern: |
+              <constant ... value='$...MODE' ... name="struts.devMode" ... />
+          - pattern: |
+              <constant ... value="$...MODE" ... name='struts.devMode' ... />
+          - pattern: |
+              <constant ... value="$...MODE" ... name="struts.devMode" ... />
+      # XXX support value substitutions like `"${env.STRUTS_DEV_MODE:false}"`
+      # and `"${os.name}"`. Semgrep fails to match if source file has a `"$` in
+      # it, even with a permissive regex...
+      - metavariable-regex:
+          metavariable: $...MODE
+          regex: >-
+            (true|1)
+          #  (true|1|\$\{.*\})
+          #  \s*.*
+          # Below alternative regex limits to just env and valid system
+          # properties. But I think its safer to just wildcard
+          #  (true|1|\$\{(env|file|java|line|os|path|user)\..*\})

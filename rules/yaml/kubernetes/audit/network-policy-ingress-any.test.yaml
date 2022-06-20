@@ -1,0 +1,14 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: test
+  namespace: '{{$config.global.namespace}}'
+  labels:
+    app: test
+spec:
+  podSelector:
+    matchLabels:
+      app: test
+  # ruleid: network-policy-ingress-any
+  ingress:
+    - {}

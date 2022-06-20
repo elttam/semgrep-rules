@@ -1,0 +1,29 @@
+rules:
+  - id: consumes-method-star
+    message: JAX-RS @Consumes("*/*") $CLASS.$METHOD
+    severity: INFO
+    languages:
+      - java
+    metadata:
+      docs:
+        - https://docs.oracle.com/javaee/7/api/javax/ws/rs/Consumes.html
+      category: security
+      technology:
+        - JVM
+        - jax-rs
+    patterns:
+      - pattern-inside: |
+          class $CLASS {
+            ...
+          }
+      - pattern-either:
+          - pattern: |
+              @jakarta.ws.rs.Consumes({"*/*"})
+              $TYPE $METHOD(...) {
+                ...
+              }
+          - pattern: |
+              @javax.ws.rs.Consumes({"*/*"})
+              $TYPE $METHOD(...) {
+                ...
+              }

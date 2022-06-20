@@ -1,0 +1,26 @@
+rules:
+  - id: default-properties-devmode
+    message: >-
+      default.properties struts.devMode = $MODE
+    severity: WARNING
+    # There is no proper tree-sitter-ini
+    languages: [generic]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    paths:
+      include:
+        - default.properties
+        # Need to include test file
+        - default-properties-devmode.properties
+    patterns:
+      - pattern: |
+          struts.devMode = $MODE
+      # XXX Is this coerced or can in only be "true" or "false"
+      # XXX Is it case insensitive?
+      - metavariable-regex:
+          metavariable: $MODE
+          regex: >-
+            (true|1)

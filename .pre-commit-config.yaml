@@ -1,0 +1,78 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.5.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+  # Normally case - single document YAML only
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.5.0
+    hooks:
+      - id: check-yaml
+        exclude: |
+          (?x)^(
+            # This is multi-document
+            rules/yaml/kubernetes/security/allow-privilege-escalation.test.yaml
+          )$
+  # Exception case - multi-document YAML OK - still check YAML
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.5.0
+    hooks:
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+        files: |
+          (?x)^(
+            # This is multi-document
+            rules/yaml/kubernetes/security/allow-privilege-escalation.test.yaml
+          )$
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.1.1
+    hooks:
+      - id: yamlfmt
+        language_version: python3.9
+        # NOTE: If you change these settings, be sure to also
+        # change the semgrep.live YAML settings, otherwise diffs will fail
+        # to lint
+        # BEN: sequence and offset differ from upstream semgrep, I like my style better
+        # but this may cause issues if upstreaming rules to their repo.
+        args: [--width, '120', --implicit_start, --mapping, '2', --sequence, '4', --offset, '2']
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.9
+    hooks:
+      - id: remove-tabs
+        exclude_types: [go]
+
+  #- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  #  rev: v2.3.0
+  #  hooks:
+  #    - id: pretty-format-java
+  #      args: [--autofix]
+  #    - id: pretty-format-kotlin
+  #      args: [--autofix]
+  #    #- id: pretty-format-yaml
+  #    #  args: [--autofix, --indent, '2']
+
+  # Ben: This repo is terrible
+  #- repo: https://github.com/maltzj/google-style-precommit-hook
+  #  rev: b7e9e7fcba4a5aea463e72fe9964c14877bd8130
+
+
+  #- repo: https://github.com/jlebar/pre-commit-hooks.git
+  #  rev: master
+  #  hooks:
+  #    # searches for "DO NOT SUBMIT"
+  #    #- id: do-not-submit
+  #    #- id: bazel-buildifier
+  #
+  #    # Ben: Get error with `protobuf` on pre-commit run (installing after a clean)
+  #    # pre-commit 2.9.0 and newer should be able to use the following
+  #    # (note: untested).
+  #    - id: clang-format-whole-file
+  #      types_or: [c++, c, java, javascript, objective-c, c#]
+  #    #- id: clang-format-diff
+  #    #  types_or: [c++, c, java, javascript, objective-c, protobuf, c#]

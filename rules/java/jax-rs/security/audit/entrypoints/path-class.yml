@@ -1,0 +1,34 @@
+rules:
+  - id: path-class
+    message: >-
+      JAX-RS class $CLASS Path $PATH
+    severity: INFO
+    languages: [java]
+    metadata:
+      docs:
+        - https://docs.oracle.com/javaee/7/api/index.html?javax/ws/rs/Path.html
+      category: security
+      technology:
+        - JVM
+        - jax-rs
+    patterns:
+      # These use @Path(...) to match expressions like @Path(value = "string").
+      # As pattern: `@Path($PATH)` will only match `@Path("string")`.
+      - pattern-either:
+          - pattern-inside: |
+              @jakarta.ws.rs.Path(...)
+              class $CLASS
+          - pattern-inside: |
+              @javax.ws.rs.Path(...)
+              class $CLASS
+          # Unqualified - need for when they do `import javax.ws.rs.*`;
+          - pattern-inside: |
+              @Path(...)
+              class $CLASS
+      - pattern-either:
+          - pattern: |
+              @$ANNOTATION(value = $PATH)
+              class $CLASS
+          - pattern: |
+              @$ANNOTATION($PATH)
+              class $CLASS

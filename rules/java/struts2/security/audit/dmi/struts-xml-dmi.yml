@@ -1,0 +1,45 @@
+rules:
+  - id: struts-xml-dmi
+    message: >-
+      struts.xml Dynamic Method Invocation
+    severity: WARNING
+    # There is no proper tree-sitter-xml
+    # Only this https://github.com/unhammer/tree-sitter-xml
+    languages: [generic]
+    metadata:
+      docs:
+        - https://struts.apache.org/core-developers/action-configuration.html#dynamic-method-invocation
+        - https://cwiki.apache.org/confluence/display/WW/S2-019
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    paths:
+      include:
+        - struts*.xml
+    patterns:
+      - pattern-either:
+          - pattern: |
+              <constant ... name='struts.enable.DynamicMethodInvocation' ... value='$...MODE' ... />
+          - pattern: |
+              <constant ... name='struts.enable.DynamicMethodInvocation' ... value="$...MODE" ... />
+          - pattern: |
+              <constant ... name="struts.enable.DynamicMethodInvocation" ... value='$...MODE' ... />
+          - pattern: |
+              <constant ... name="struts.enable.DynamicMethodInvocation" ... value="$...MODE" ... />
+          - pattern: |
+              <constant ... value='$...MODE' ... name='struts.enable.DynamicMethodInvocation' ... />
+          - pattern: |
+              <constant ... value='$...MODE' ... name="struts.enable.DynamicMethodInvocation" ... />
+          - pattern: |
+              <constant ... value="$...MODE" ... name='struts.enable.DynamicMethodInvocation' ... />
+          - pattern: |
+              <constant ... value="$...MODE" ... name="struts.enable.DynamicMethodInvocation" ... />
+      # XXX support value substitutions like `"${env.STRUTS_DEV_MODE:false}"`
+      # and `"${os.name}"`. Semgrep fails to match if source file has a `"$` in
+      # it, even with a permissive regex...
+      - metavariable-regex:
+          metavariable: $...MODE
+          regex: >-
+            (true|1)
+          #  (true|1|\$\{.*\})

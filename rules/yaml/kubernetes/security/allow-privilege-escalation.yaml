@@ -1,0 +1,39 @@
+rules:
+  - id: allow-privilege-escalation
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              containers:
+                ...
+          - pattern-inside: |
+              initContainers:
+                ...
+      # volumeMounts have `name` as well and we don't want to flag these
+      - pattern-not-inside: |
+          volumeMounts:
+            ...
+      - pattern: |
+          # https://raw.githubusercontent.com/kubernetes/kubernetes/master/api/openapi-spec/swagger.json
+          # `name` is a required field, `image` is not
+          name: $NAME
+          ...
+      - pattern-not: |
+          # need to repeat the positive pattern
+          name: ...
+          ...
+          securityContext:
+            ...
+            allowPrivilegeEscalation: false
+    message: >-
+      Container $NAME allows for privilege escalation via setuid or setgid binaries.
+      Add 'allowPrivilegeEscalation: false' in 'securityContext' to prevent this.
+    metadata:
+      technology:
+        - kubernetes
+      references:
+        - https://kubernetes.io/docs/concepts/policy/pod-security-policy/#privilege-escalation
+        - https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+        - https://www.kernel.org/doc/Documentation/prctl/no_new_privs.txt
+        - https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html#rule-4-add-no-new-privileges-flag
+    languages: [yaml]
+    severity: WARNING

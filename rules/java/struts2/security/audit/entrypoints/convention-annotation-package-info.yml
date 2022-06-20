@@ -1,0 +1,26 @@
+rules:
+  # Waiting for semgrep release to includes
+  # https://github.com/returntocorp/semgrep/pull/5424
+  # Latest version 0.97.0 has it, but annotations don't work
+  - id: convention-annotation-package-info
+    message: >-
+      Struts2 Convention plugin
+      annotation $ANNOTATION
+      params $...PARAMS
+      package $PACKAGE
+    severity: INFO
+    languages: [java]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+        - Struts2 Convention Plugin
+    patterns:
+      - pattern: |
+          @$ANNOTATION($...PARAMS)
+          package $PACKAGE;
+      - metavariable-regex:
+          metavariable: $ANNOTATION
+          regex: >-
+            (org.apache.struts2.convention.annotation.Namespace|Namespace|ParentPackage)

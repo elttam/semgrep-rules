@@ -1,0 +1,32 @@
+rules:
+  - id: convention-annotation-class-method
+    message: >-
+      Struts2 Convention plugin
+      annotation $ANNOTATION
+      params $...PARAMS
+      class.method $CLASS.$METHOD
+    severity: INFO
+    languages: [java]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+        - Struts2 Convention Plugin
+    patterns:
+      - pattern-either:
+          - pattern: |
+              @$ANNOTATION($...PARAMS)
+              class $CLASS
+          - patterns:
+              - pattern-inside: |
+                  class $CLASS {
+                    ...
+                  }
+              - pattern: |
+                  @$ANNOTATION($...PARAMS)
+                  $RETURN $METHOD($...ARGS)
+      - metavariable-regex:
+          metavariable: $ANNOTATION
+          regex: >-
+            (Action|Actions)

@@ -1,0 +1,24 @@
+rules:
+  - id: consumes-class-star
+    message: JAX-RS @Consumes("*/*") $CLASS
+    severity: INFO
+    languages:
+      - java
+    metadata:
+      docs:
+        - https://docs.oracle.com/javaee/7/api/javax/ws/rs/Consumes.html
+      category: security
+      technology:
+        - JVM
+        - jax-rs
+    pattern-either:
+      - pattern: |
+          @jakarta.ws.rs.Consumes({"*/*"})
+          class $CLASS {
+            ...
+          }
+      - pattern: |
+          @javax.ws.rs.Consumes({"*/*"})
+          class $CLASS {
+            ...
+          }

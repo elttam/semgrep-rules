@@ -1,0 +1,51 @@
+rules:
+  - id: UnsafeHttpInvokerServiceExporter func
+    metadata: &metadata
+      cve: CVE-2016-1000027
+      docs:
+        - https://blog.gypsyengineer.com/en/security/detecting-dangerous-spring-exporters-with-codeql.html
+        - https://www.tenable.com/security/research/tra-2016-20
+      category: security
+      technology:
+        - spring
+        - spring-framework
+        - jvm
+    languages: [java]
+    severity: INFO
+    message: >-
+      Unsafe Spring Service Exporter func $FUNC
+    pattern-either:
+      - pattern: |
+          org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter $FUNC(...)
+      - pattern: |
+          org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter $FUNC(...)
+      - pattern: |
+          HttpInvokerServiceExporter $FUNC(...)
+      - pattern: |
+          SimpleHttpInvokerServiceExporter $FUNC(...)
+  - id: UnsafeHttpInvokerServiceExporter var
+    metadata: *metadata
+    languages: [java]
+    severity: INFO
+    message: >-
+      Unsafe Spring Service Exporter var $VAR
+    pattern-either:
+      - pattern: |
+          $VAR = new org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter()
+      - pattern: |
+          $VAR = new org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter()
+      - pattern: |
+          $VAR = new HttpInvokerServiceExporter()
+      - pattern: |
+          $VAR = new SimpleHttpInvokerServiceExporter()
+  - id: UnsafeHttpInvokerServiceExporter extends
+    metadata: *metadata
+    languages: [java]
+    severity: INFO
+    message: >-
+      Unsafe Spring Service Exporter $CLASS extends RemoteInvocationSerializingExporter
+    pattern-either:
+      - pattern: |
+          class $CLASS extends org.springframework.remoting.rmi.RemoteInvocationSerializingExporter
+      - pattern: |
+          class $CLASS extends RemoteInvocationSerializingExporter

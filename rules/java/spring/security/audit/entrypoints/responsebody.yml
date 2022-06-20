@@ -1,0 +1,22 @@
+rules:
+  # XXX This should match code already found with a `@*Mapping`
+  - id: rest-ResponseBody
+    metadata:
+      docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    pattern-either:
+      - pattern: |
+          @org.springframework.web.bind.annotation.ResponseBody(...)
+          $RETURN $METHOD(...)
+      - pattern: |
+          @ResponseBody(...)
+          $RETURN $METHOD(...)
+    message: >-
+      Method return value should be bound to the web response body
+    severity: INFO
+    # I wish this existed
+    #enabled: false
+    languages: [java]

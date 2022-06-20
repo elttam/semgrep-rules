@@ -1,0 +1,37 @@
+rules:
+  - id: taglib-directive
+    message: >-
+      JSTL taglib directive
+      prefix="$...PREFIX"
+      uri="$...URI"
+    severity: INFO
+    languages: [generic]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+        - JSTL
+        - taglib
+    paths:
+      include:
+        - '*.jsp'
+    # NOTE: need to use `"$...URI"` etc to capture strings like `"/struts"`.
+    # Due to the `/`, which breaks the binding.
+    pattern-either:
+      - pattern: |
+          <%@ taglib prefix='$...PREFIX' ... uri='$...URI'
+      - pattern: |
+          <%@ taglib prefix='$...PREFIX' ... uri="$...URI"
+      - pattern: |
+          <%@ taglib prefix="$...PREFIX" ... uri='$...URI'
+      - pattern: |
+          <%@ taglib prefix="$...PREFIX" ... uri="$...URI"
+      - pattern: |
+          <%@ taglib uri='$...URI' ... prefix='$...PREFIX'
+      - pattern: |
+          <%@ taglib uri='$...URI' ... prefix="$...PREFIX"
+      - pattern: |
+          <%@ taglib uri="$...URI" ... prefix='$...PREFIX'
+      - pattern: |
+          <%@ taglib uri="$...URI" ... prefix="$...PREFIX"

@@ -1,0 +1,35 @@
+name: rule-benchmarks
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  benchmark-test:
+    name: semgrep benchmark tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.7]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Run Timing Benchmark With Latest Semgrep Version
+        run: |
+          pip3 install semgrep
+          semgrep --version
+          python3 -m semgrep --version
+          export PATH=/github/home/.local/bin:$PATH
+          python3 semgrep/perf/run-benchmarks --small-only --std-only --output-time-per-rule-json baseline_timing1.txt
+          cat baseline_timing1.txt
+      - name: Run Timing Benchmark With Specified Config File
+        run: |
+          python3 semgrep/perf/run-benchmarks --config perf-templates/config-template.yml --output-time-per-rule-json baseline_timing2.txt
+          cat baseline_timing2.txt
+          pip3 uninstall -y semgrep

@@ -1,0 +1,21 @@
+rules:
+  - id: privileged-container
+    patterns:
+      - pattern-inside: |
+          containers:
+            ...
+      - pattern: |
+          image: $IMAGE
+          ...
+          securityContext:
+            ...
+            privileged: true
+    message: >-
+      Privileged Container $IMAGE
+    metadata:
+      technology:
+        - kubernetes
+      references:
+        - https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+    languages: [yaml]
+    severity: WARNING

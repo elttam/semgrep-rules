@@ -1,0 +1,45 @@
+rules:
+  - id: web-xml-url-pattern
+    message: >-
+      web.xml Struts2
+      filter $FILTER_NAME
+      class $...FILTER_CLASS
+      url-pattern $...URL_PATTERN
+    severity: INFO
+    # There is no proper tree-sitter-xml
+    # Only this https://github.com/unhammer/tree-sitter-xml
+    languages: [generic]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    paths:
+      include:
+        - web.xml
+        # unit test
+        - web-xml-url-pattern.xml
+    patterns:
+      - pattern: |
+          <filter>
+              ...
+              <filter-name>$FILTER_NAME</filter-name>
+              ...
+              <filter-class>$...FILTER_CLASS</filter-class>
+              ...
+          </filter>
+          ...
+          ...
+          <filter-mapping>
+              ...
+              <filter-name>$FILTER_NAME</filter-name>
+              ...
+              <url-pattern>$...URL_PATTERN</url-pattern>
+              ...
+          </filter-mapping>
+      - metavariable-regex:
+          metavariable: $...FILTER_CLASS
+          # regex not anchored but need to explicitly match newlines
+          regex: >-
+            \s*org\.apache\.struts2.*
+      # TODO I wish I could trim($...FILTER_CLASS), to remove embedded newlines

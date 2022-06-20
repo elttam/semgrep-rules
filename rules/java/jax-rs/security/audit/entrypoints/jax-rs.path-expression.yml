@@ -1,0 +1,41 @@
+rules:
+  - id: jax-rs.path-expression
+    message: JAX-RS Path Expression $PATH1/$PATH2 class $CLASS.$FUNC()
+    severity: INFO
+    languages:
+      - java
+    metadata:
+      docs:
+        - https://docs.oracle.com/javaee/7/api/index.html?javax/ws/rs/Path.html
+      category: security
+      technology:
+        - JVM
+        - jax-rs
+    patterns:
+      - pattern-inside: |
+          @Path($PATH1)
+          class $CLASS {
+            ...
+          }
+      - pattern: |
+          @Path($PATH2)
+          $RETURNTYPE $FUNC (...) {
+            ...
+          }
+      - pattern-either:
+          - patterns:
+              - pattern: |
+                  $PATH1
+              - metavariable-pattern:
+                  metavariable: $PATH1
+                  patterns:
+                    - pattern-not: |
+                        "..."
+          - patterns:
+              - pattern: |
+                  $PATH2
+              - metavariable-pattern:
+                  metavariable: $PATH2
+                  patterns:
+                    - pattern-not: |
+                        "..."

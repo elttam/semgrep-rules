@@ -1,0 +1,150 @@
+<!--
+Copied from repo: https://github.com/apache/struts-examples.git
+file:  portlet/src/main/resources/struts-view.xml  ~/work/elttam/burgerandchips/semgrep-rules-internal/rules/java/struts2/security/audit/entrypoints/struts-xml-action-name.xml
+rev: heads/master-0-g371e480
+-->
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+    <package name="view" extends="struts-portlet-default"
+        namespace="/view">
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="index"
+            class="com.opensymphony.xwork2.ActionSupport">
+            <result name="success">/WEB-INF/view/index.jsp</result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="formExample"
+            class="org.apache.struts2.portlet.example.FormExample" method="input">
+            <result name="input">
+                /WEB-INF/view/formExampleInput.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="processFormExample"
+            class="org.apache.struts2.portlet.example.FormExample">
+            <result name="input">
+                /WEB-INF/view/formExampleInput.jsp
+            </result>
+            <result name="success">
+                /WEB-INF/view/formExample.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="formExamplePrg" class="org.apache.struts2.portlet.example.FormExample">
+            <result name="input">
+                /WEB-INF/view/formExampleInputPrg.jsp
+            </result>
+            <result name="success" type="redirectAction">
+                <param name="actionName">formExamplePrg</param>
+                <param name="method">displayResult</param>
+                <param name="firstName">${firstName}</param>
+                <param name="lastName">${lastName}</param>
+            </result>
+            <result name="displayResult">
+                /WEB-INF/view/formExample.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="formExampleModelDriven"
+            class="org.apache.struts2.portlet.example.FormExampleModelDriven">
+            <result name="input">
+                /WEB-INF/view/formExampleInputModelDriven.jsp
+            </result>
+            <result name="success">
+                /WEB-INF/view/formExample.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="validationExample"
+            class="org.apache.struts2.portlet.example.FormExample" method="input">
+            <result name="input">
+                /WEB-INF/view/formExampleInputValidation.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="processValidationExample"
+            class="org.apache.struts2.portlet.example.FormExample">
+            <result name="success">
+                /WEB-INF/view/formExample.jsp
+            </result>
+            <result name="input">
+                /WEB-INF/view/formExampleInputValidation.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="fileUpload" class="org.apache.struts2.portlet.example.fileupload.FileUploadAction">
+            <result name="input">
+                /WEB-INF/view/fileUpload.jsp
+            </result>
+            <result name="success">
+                /WEB-INF/view/fileUploadSuccess.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="tokenExample"
+            class="com.opensymphony.xwork2.ActionSupport" method="input">
+            <result name="input">
+                /WEB-INF/view/tokenExampleInput.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="processTokenExample"
+            class="com.opensymphony.xwork2.ActionSupport">
+            <result name="input">
+                /WEB-INF/view/tokenExampleInput.jsp
+            </result>
+            <result name="invalid.token">
+                /WEB-INF/view/tokenExampleInput.jsp
+            </result>
+            <result name="success">
+                /WEB-INF/view/tokenExample.jsp
+            </result>
+            <interceptor-ref name="portletDefaultStackWithToken" />
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="springExample" class="springAction">
+            <result name="success">
+                /WEB-INF/view/springExample.jsp
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="freeMarkerExample"
+            class="com.opensymphony.xwork2.ActionSupport" method="input">
+            <result type="freemarker" name="input">
+                /WEB-INF/view/freeMarkerExampleInput.ftl
+            </result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="processFreeMarkerExample"
+            class="org.apache.struts2.portlet.example.FormExample">
+            <result name="success">/view/processFreeMarkerView.action?firstName=${firstName}&amp;lastName=${lastName}</result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="processFreeMarkerView" class="org.apache.struts2.portlet.example.FormExample">
+            <result type="freemarker" name="success">/WEB-INF/view/freeMarkerExample.ftl</result>
+        </action>
+
+        <!-- ruleid: struts-xml-action-name -->
+        <action name="velocityHelloWorld" class="com.opensymphony.xwork2.ActionSupport">
+            <result type="velocity" name="success">/WEB-INF/view/helloWorld.vm</result>
+        </action>
+
+    </package>
+</struts>

@@ -1,0 +1,41 @@
+rules:
+  - id: execute-method
+    message: >-
+      Struts2 Possible Action Handler class $CLASS has execute() method
+    severity: INFO
+    languages: [java]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+    patterns:
+      #- pattern-not: |
+      #    @$ANNOTATION($...PARAMS)
+      #    class $CLASS
+      - pattern-not: |
+          class $CLASS extends ActionSupport {
+            ...
+            $RETURN $METHOD() {
+              ...
+            }
+            ...
+          }
+      - patterns:
+          - pattern: |
+              class $CLASS {
+                ...
+                $RETURN $METHOD() {
+                  ...
+                }
+                ...
+              }
+      - metavariable-pattern:
+          metavariable: $METHOD
+          pattern: |
+            execute
+
+      #- metavariable-regex:
+      #    metavariable: $ANNOTATION
+      #    regex: >-
+      #      (Action|Actions)

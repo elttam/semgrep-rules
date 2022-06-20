@@ -1,0 +1,34 @@
+rules:
+  - id: fromXML
+    metadata:
+      cwe: 'CWE-502: Deserialization of Untrusted Data'
+      owasp: 'A8: Insecure Deserialization'
+      docs:
+        - https://x-stream.github.io/javadoc/index.html?com/thoughtworks/xstream/XStream.html
+        - https://www.baeldung.com/java-xstream-remote-code-execution
+      category: security
+      technology:
+        - JVM
+        - XML
+        - XStream
+    patterns:
+      - pattern-inside: |
+          import com.thoughtworks.xstream.XStream;
+          ...
+      - pattern-either:
+          - patterns:
+              - pattern-inside: |
+                  $TYPE $XSTREAM = new com.thoughtworks.xstream.XStream(...);
+                  ...
+              - pattern: $XSTREAM.fromXML(...);
+          - pattern-inside: |
+              class $CLASS {
+                ...
+                $TYPE $XSTREAM = new com.thoughtworks.xstream.XStream(...);
+                ...
+              }
+          - pattern: $XSTREAM.fromXML(...);
+    message: >-
+      XStream XML Deserialzation: Check that they have correctly set an allow-list and if an attacker can control input.
+    severity: WARNING
+    languages: [java]

@@ -1,0 +1,19 @@
+rules:
+  - id: network-policy-ingress-any
+    patterns:
+      - pattern-inside: |
+          spec:
+            ...
+      - pattern: |
+          ingress:
+            ...
+            - {}
+    message: >-
+      NetworkPolicy with Ingress Permit ANY
+    metadata:
+      technology:
+        - kubernetes
+      references:
+        - https://kubernetes.io/docs/concepts/services-networking/network-policies/
+    languages: [generic]
+    severity: WARNING

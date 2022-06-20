@@ -1,0 +1,27 @@
+rules:
+  # This is in a separate file to avoid warnings about trying to parse XML files as Java
+  - id: UnsafeHttpInvokerServiceExporter XML
+    metadata:
+      cve: CVE-2016-1000027
+      docs:
+        - https://blog.gypsyengineer.com/en/security/detecting-dangerous-spring-exporters-with-codeql.html
+        - https://www.tenable.com/security/research/tra-2016-20
+      category: security
+      technology:
+        - spring
+        - spring-framework
+        - jvm
+    languages: [generic]
+    paths:
+      include:
+        - '*.xml'
+    severity: INFO
+    message: >-
+      Unsafe Spring Service Exporter XML
+    pattern-either:
+      - pattern: |
+          org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter
+      - pattern: |
+          org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter
+      - pattern: |
+          org.springframework.remoting.rmi.RemoteInvocationSerializingExporter

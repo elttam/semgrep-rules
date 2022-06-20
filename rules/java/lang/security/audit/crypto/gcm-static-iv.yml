@@ -1,0 +1,42 @@
+rules:
+  - id: gcm-static-iv
+    message: >-
+      GCM IV and key are both same source $KEY_BYTES
+    metadata:
+      cwe: |
+        # Closer match, but specifically CBC mode, whereas this is GCM mode.
+        #CWE-329: Not Using a Random IV with CBC Mode
+        CWE-330: Use of Insufficiently Random Values
+      references:
+        - https://www.elttam.com/blog/key-recovery-attacks-on-gcm
+      help:
+        # Similar rule
+        - https://github.com/returntocorp/semgrep-rules/pull/382/files
+      category: security
+      technology:
+        - Java
+        - GCM
+    languages: [java]
+    severity: WARNING
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              $KEY_BYTES = $RAW_KEY.getBytes();
+              ...
+          - pattern-inside: |
+              byte[] $KEY_BYTES = { ... };
+              ...
+          - pattern-inside: |
+              class $CLASS {
+                byte[] $KEY_BYTES = {...};
+                ...
+              }
+      - pattern-either:
+          - pattern: |
+              $GCM_PARAM_SPEC = new GCMParameterSpec($BLOCK_SIZE, $KEY_BYTES);
+              ...
+              $KEY = new SecretKeySpec($KEY_BYTES, $ALGO);
+          - pattern: |
+              $KEY = new SecretKeySpec($KEY_BYTES, $ALGO);
+              ...
+              $GCM_PARAM_SPEC = new GCMParameterSpec($BLOCK_SIZE, $KEY_BYTES);

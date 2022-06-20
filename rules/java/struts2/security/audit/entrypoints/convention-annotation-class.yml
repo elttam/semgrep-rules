@@ -1,0 +1,23 @@
+rules:
+  - id: convention-annotation-class
+    message: >-
+      Struts2 Convention plugin
+      annotation $ANNOTATION
+      params $...PARAMS
+      class $CLASS
+    severity: INFO
+    languages: [java]
+    metadata:
+      category: security
+      technology:
+        - JVM
+        - Struts2
+        - Struts2 Convention Plugin
+    patterns:
+      - pattern: |
+          @$ANNOTATION($...PARAMS)
+          class $CLASS
+      - metavariable-regex:
+          metavariable: $ANNOTATION
+          regex: >-
+            (Namespace)

@@ -1,0 +1,74 @@
+rules:
+  - id: path-class-method
+    message: >-
+      JAX-RS class $CLASS.$FUNC Path $PATH1/$PATH2
+    severity: INFO
+    languages: [java]
+    metadata:
+      docs:
+        - https://docs.oracle.com/javaee/7/api/index.html?javax/ws/rs/Path.html
+        - https://jakarta.ee/specifications/platform/9/apidocs/jakarta/ws/rs/path
+      category: security
+      technology:
+        - JVM
+        - jax-rs
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              @jakarta.ws.rs.Path(...)
+              class $CLASS {
+                ...
+              }
+          - pattern-inside: |
+              @javax.ws.rs.Path(...)
+              class $CLASS {
+                ...
+              }
+          # Unqualified for if they do `import foo.*`
+          - pattern-inside: |
+              @Path(...)
+              class $CLASS {
+                ...
+              }
+      - pattern-either:
+          - pattern-inside: |
+              @$ANNOTATION(value = $PATH1)
+              class $CLASS {
+                ...
+              }
+          - pattern-inside: |
+              @$ANNOTATION($PATH1)
+              class $CLASS {
+                ...
+              }
+      - pattern-either:
+          - pattern: |
+              @jakarta.ws.rs.Path(value = $PATH2)
+              $RETURN $FUNC(...) {
+                ...
+              }
+          - pattern: |
+              @javax.ws.rs.Path(value = $PATH2)
+              $RETURN $FUNC(...) {
+                ...
+              }
+          - pattern: |
+              @Path(value = $PATH2)
+              $RETURN $FUNC(...) {
+                ...
+              }
+          - pattern: |
+              @jakarta.ws.rs.Path($PATH2)
+              $RETURN $FUNC(...) {
+                ...
+              }
+          - pattern: |
+              @javax.ws.rs.Path($PATH2)
+              $RETURN $FUNC(...) {
+                ...
+              }
+          - pattern: |
+              @Path($PATH2)
+              $RETURN $FUNC(...) {
+                ...
+              }

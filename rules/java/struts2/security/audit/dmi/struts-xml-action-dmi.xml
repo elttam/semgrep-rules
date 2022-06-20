@@ -1,0 +1,38 @@
+<!--
+Copied from repo: https://github.com/apache/struts-examples.git
+file:  wildcard-method-selection/src/main/resources/struts.xml
+rev: heads/master-0-g371e480
+-->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+   <constant name="struts.devMode" value="false" />
+   <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+
+   <package name="wildcardmethodexample" extends="struts-default">
+
+        <!-- Whatever value is before Person for the name of
+        the action will be the name of the method to call in
+        class PersonAction.  For example action createPerson
+        will call a method named create in class PersonAction -->
+
+        <action name="*Person" class="org.apache.struts.tutorials.wildcardmethod.action.PersonAction" method="{1}">
+            <result name="success">view.jsp</result>
+            <result name="input">input.jsp</result>
+            <allowed-methods>create,edit,saveOrUpdate,delete</allowed-methods>
+        </action>
+
+        <!-- ruleid: struts-xml-action-dmi -->
+        <action name="person!*" class="org.apache.struts.tutorials.wildcardmethod.action.PersonAction" method="run{1}This">
+            <result name="success">view.jsp</result>
+            <result name="input">input.jsp</result>
+            <allowed-methods>runCreateThis</allowed-methods>
+        </action>
+
+   </package>
+
+</struts>

@@ -1,0 +1,20 @@
+rules:
+  - id: rest-DeleteMapping
+    metadata:
+      docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/DeleteMapping.html
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    pattern-either:
+      - pattern: |
+          @org.springframework.web.bind.annotation.DeleteMapping(...)
+          $RETURN $METHOD(...)
+      # unqualified
+      - pattern: |
+          @DeleteMapping(...)
+          $RETURN $METHOD(...)
+    message: >-
+      Entrypoint DELETE $METHOD
+    severity: INFO
+    languages: [java]

@@ -1,0 +1,15 @@
+runs:
+  - name: test_ruby
+    repos:
+      - url: https://github.com/grocer/grocer
+        commit_hash: 1a4958863b24fd45ae36f29e0c8ab88399bc9097
+    rule_configs:
+      - r/ruby
+    opts: []
+  - name: test_javascript
+    repos:
+      - url: https://github.com/mintchaos/flippant.js
+        commit_hash: 8bba9a459501eec18ddf9333d41530c6ac52c4cc
+    rule_configs:
+      - r/javascript
+    opts: []

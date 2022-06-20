@@ -1,0 +1,19 @@
+rules:
+  - id: rest-PutMapping
+    metadata:
+      docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    pattern-either:
+      - pattern: |
+          @org.springframework.web.bind.annotation.PutMapping(...)
+          $RETURN $METHOD(...)
+      - pattern: |
+          @PutMapping(...)
+          $RETURN $METHOD(...)
+    message: >-
+      Entrypoint PUT $METHOD
+    severity: INFO
+    languages: [java]

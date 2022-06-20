@@ -1,0 +1,23 @@
+rules:
+  - id: provider-class
+    message: JAX-RS @Provider $CLASS
+    severity: INFO
+    languages:
+      - java
+    metadata:
+      docs: https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/ext/Provider.html
+      category: security
+      technology:
+        - JVM
+        - jax-rs
+    pattern-either:
+      - pattern: |
+          @jakarta.ws.rs.ext.Provider
+          class $CLASS {
+            ...
+          }
+      - pattern: |
+          @javax.ws.rs.ext.Provider
+          class $CLASS {
+            ...
+          }

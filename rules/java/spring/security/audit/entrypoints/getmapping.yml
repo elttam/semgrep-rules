@@ -1,0 +1,46 @@
+rules:
+  - id: rest-GetMapping
+    metadata:
+      docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    #patterns:
+      #- pattern:
+      #    public class $CLASS {
+      #      ...
+      #    }
+    pattern-either:
+      # You can't match $ACCESS to (public|private|protected), you can put a literal public or leave it and it will match public still
+      - pattern: |
+          @org.springframework.web.bind.annotation.GetMapping(value=$PATH)
+          $RETURN $METHOD(...)
+      - pattern: |
+          @org.springframework.web.bind.annotation.GetMapping(path=$PATH)
+          $RETURN $METHOD(...)
+      # I think this will match expressions, not just literal strings, you can't do `"$PATH"`, it won't match
+      - pattern: |
+          @org.springframework.web.bind.annotation.GetMapping($PATH)
+          $RETURN $METHOD(...)
+      - pattern: |
+          @org.springframework.web.bind.annotation.GetMapping(...)
+          $RETURN $METHOD(...)
+      # unqualified
+      - pattern: |
+          @GetMapping(value=$PATH)
+          $RETURN $METHOD(...)
+      - pattern: |
+          @GetMapping(path=$PATH)
+          $RETURN $METHOD(...)
+      - pattern: |
+          @GetMapping($PATH)
+          $RETURN $METHOD(...)
+      - pattern: |
+          @GetMapping(...)
+          $RETURN $METHOD(...)
+    # Can't access $CLASS from `pattern-inside`
+    message: >-
+      Entrypoint $METHOD GET $PATH
+    severity: INFO
+    languages: [java]

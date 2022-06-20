@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  # ruleid: allow-privilege-escalation
+    - name: nginx
+      image: nginx
+  # ruleid: allow-privilege-escalation
+    - name: postgres
+      image: postgres
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
+  # ruleid: allow-privilege-escalation
+    - name: redis
+      image: redis
+      securityContext:
+        allowPrivilegeEscalation: true
+  # ok: allow-privilege-escalation
+    - name: haproxy
+      image: haproxy
+      securityContext:
+        allowPrivilegeEscalation: false
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      containers:
+        # ruleid: allow-privilege-escalation
+        - name: c1
+          securityContext:
+            allowPrivilegeEscalation: true
+        # ruleid: allow-privilege-escalation
+        - name: c2
+          securityContext:
+            allowPrivilegeEscalation: true
+        # ok: allow-privilege-escalation
+        - name: c3
+          securityContext:
+            allowPrivilegeEscalation: false
+        # ok: allow-privilege-escalation
+          volumeMounts:
+            - mountPath: /certs
+              name: certs
+              readOnly: true
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      initContainers:
+        # ruleid: allow-privilege-escalation
+        - name: init1
+          securityContext:
+            allowPrivilegeEscalation: true
+        # ok: allow-privilege-escalation
+        - name: init2
+          securityContext:
+            allowPrivilegeEscalation: false
+        # ruleid: allow-privilege-escalation
+        - name: init3
+      containers:
+        # ruleid: allow-privilege-escalation
+        - name: c1
+        # ok: allow-privilege-escalation
+        - name: c2
+          securityContext:
+            allowPrivilegeEscalation: false
+        # ruleid: allow-privilege-escalation
+        - name: c3
+          securityContext:
+            allowPrivilegeEscalation: true

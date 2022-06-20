@@ -1,0 +1,26 @@
+rules:
+  - id: rest-CrossOrigin
+    metadata:
+      docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html
+      category: security
+      technology:
+        - spring
+        - spring-framework
+    pattern-either:
+      - pattern: |
+          @org.springframework.web.bind.annotation.CrossOrigin(...)
+          class $CLASS
+      - pattern: |
+          @org.springframework.web.bind.annotation.CrossOrigin(...)
+          $RETURN $METHOD(...)
+      # unqualified
+      - pattern: |
+          @CrossOrigin(...)
+          class $CLASS
+      - pattern: |
+          @CrossOrigin(...)
+          $RETURN $METHOD(...)
+    message: >-
+      Cross-Origin requests permitted $CLASS / $Method
+    severity: INFO
+    languages: [java]
