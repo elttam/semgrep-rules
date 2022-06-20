@@ -1,4 +1,4 @@
-name: semgrep-test
+name: semgrep-rules-test
 
 on:
   pull_request:
@@ -9,19 +9,14 @@ on:
 jobs:
   self-test:
     runs-on: ubuntu-latest
-    name: test-develop
+    name: run semgrep rules tests
     steps:
       - uses: actions/checkout@v2
-      - name: test
-        id: test
+      - name: run test
+        id: semgrep-test
         uses: returntocorp/semgrep-rules-test-action@master
       - uses: actions/upload-artifact@v1
         if: always()
         with:
           name: tests
           path: ${{ steps.test.outputs.output_dir }}
-      - uses: actions/upload-artifact@v2
-        with:
-          name: semgrep_runs
-          path: semgrep_runs_output.tar.gz
-          if-no-files-found: error
