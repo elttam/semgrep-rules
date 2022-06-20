@@ -16,24 +16,19 @@ rules:
       - pattern-not: |
           class $CLASS extends ActionSupport {
             ...
-            $RETURN $METHOD() {
+            $RETURN execute() {
               ...
             }
             ...
           }
-      - patterns:
-          - pattern: |
-              class $CLASS {
-                ...
-                $RETURN $METHOD() {
-                  ...
-                }
-                ...
-              }
-      - metavariable-pattern:
-          metavariable: $METHOD
-          pattern: |
-            execute
+      - pattern: |
+          class $CLASS {
+            ...
+            $RETURN execute() {
+              ...
+            }
+            ...
+          }
 
       #- metavariable-regex:
       #    metavariable: $ANNOTATION
