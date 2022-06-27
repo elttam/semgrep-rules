@@ -22,7 +22,7 @@ public class FoobarXStream {
     private XStream xstream = new XStream();
 
     public FoobarXStream() {
-        
+
         try {
             // ruleid: fromXML
             Object pq = xstream.fromXML(read);
