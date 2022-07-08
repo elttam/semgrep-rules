@@ -16,15 +16,10 @@ rules:
         - spring-framework
         - JSON
     pattern-either:
-      - patterns:
-          - pattern-inside: |
-              import com.fasterxml.jackson.databind.ObjectMapper;
-              ...
-          - pattern-either:
-              - pattern: |
-                  $X.enableDefaultTyping(...)
-              - pattern: |
-                  $X.activateDefaultTyping(...)
+      - pattern: |
+          (com.fasterxml.jackson.databind.ObjectMapper $X).enableDefaultTyping(...)
+      - pattern: |
+          (com.fasterxml.jackson.databind.ObjectMapper $X).activateDefaultTyping(...)
       - pattern: |
           @JsonTypeInfo(...)
       - pattern: |
