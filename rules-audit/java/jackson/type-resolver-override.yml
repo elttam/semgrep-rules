@@ -15,15 +15,11 @@ rules:
         - spring-boot
         - spring-framework
         - JSON
-    patterns:
-      - pattern-inside: |
-          import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
-          ...
-      - pattern-either:
-          - pattern: |
-              TypeResolverBuilder $X;
-          - pattern: |
-              TypeResolverBuilder $X = ...;
+    pattern-either:
+      - pattern: |
+          com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder $X;
+      - pattern: |
+          (com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder $X) = ...;
     message: >-
       $X
       Jackson Polymorphic Typing: Polymorphic typing may have been introduced through overriding the default Jackson type
