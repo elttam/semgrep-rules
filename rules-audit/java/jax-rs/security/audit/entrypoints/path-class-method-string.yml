@@ -1,6 +1,6 @@
 rules:
   ## Note this is looking for string/string, and quoting "string/string".
-  - id: path method string
+  - id: path-method-string
     message: >-
       JAX-RS Path "$PATH1/$PATH2" endpoint $CLASS.$FUNC()
     severity: INFO

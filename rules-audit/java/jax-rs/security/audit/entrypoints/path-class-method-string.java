@@ -7,7 +7,7 @@ public class WidgetsString {
         return "blah";
     }
 
-    // ruleid: path method string
+    // ruleid: path-method-string
     @GET @Path("{id}")
     String getWidget(@PathParam("id") String id) {
         return "arghhh!";
@@ -33,7 +33,7 @@ public class WidgetsStringFq {
         return "blah";
     }
 
-    // ruleid: path method string
+    // ruleid: path-method-string
     @GET @Path("{id}")
     String getWidget(@PathParam("id") String id) {
         return "arghhh!";

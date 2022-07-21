@@ -1,5 +1,5 @@
 rules:
-  - id: jax-rs.path class
+  - id: jax-rs.path-class
     message: >-
       JAX-RS class $CLASS Path $PATH
     severity: INFO

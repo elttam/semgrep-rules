@@ -1,6 +1,6 @@
 import javax.ws.rs.Path;
 
-// ruleid: jax-rs.path class
+// ruleid: jax-rs.path-class
 @Path("widgets")
 public class WidgetsString {
     @GET
@@ -13,7 +13,7 @@ public class WidgetsString {
         return "arghhh!";
   }
 }
-// ruleid: jax-rs.path class
+// ruleid: jax-rs.path-class
 @Path(value = "tricky")
 public class WidgetsExpression {
     @GET
@@ -27,7 +27,7 @@ public class WidgetsExpression {
   }
 }
 
-// ruleid: jax-rs.path class
+// ruleid: jax-rs.path-class
 @javax.ws.rs.Path("widgets")
 public class WidgetsStringFq {
     @GET
@@ -40,7 +40,7 @@ public class WidgetsStringFq {
         return "arghhh!";
   }
 }
-// ruleid: jax-rs.path class
+// ruleid: jax-rs.path-class
 @javax.ws.rs.Path(value = "tricky")
 public class WidgetsExpressiongFq {
     @GET
