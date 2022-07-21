@@ -1,6 +1,6 @@
 rules:
   # This is in a separate file to avoid warnings about trying to parse XML files as Java
-  - id: UnsafeHttpInvokerServiceExporter XML
+  - id: UnsafeHttpInvokerServiceExporter-XML
     metadata:
       cve: CVE-2016-1000027
       docs:

@@ -7,7 +7,7 @@
 
     <bean id="accountService" class="com.gypsyengineer.server.AccountServiceImpl"/>
 
-    <!-- ruleid: UnsafeHttpInvokerServiceExporter XML -->
+    <!-- ruleid: UnsafeHttpInvokerServiceExporter-XML -->
     <bean name="/account" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
         <property name="service" ref="accountService"/>
         <property name="serviceInterface" value="com.gypsyengineer.api.AccountService"/>

@@ -1,5 +1,5 @@
 rules:
-  - id: UnsafeHttpInvokerServiceExporter func
+  - id: UnsafeHttpInvokerServiceExporter-func
     metadata: &metadata
       cve: CVE-2016-1000027
       docs:
@@ -23,7 +23,7 @@ rules:
           HttpInvokerServiceExporter $FUNC(...)
       - pattern: |
           SimpleHttpInvokerServiceExporter $FUNC(...)
-  - id: UnsafeHttpInvokerServiceExporter var
+  - id: UnsafeHttpInvokerServiceExporter-var
     metadata: *metadata
     languages: [java]
     severity: INFO
@@ -38,7 +38,7 @@ rules:
           $VAR = new HttpInvokerServiceExporter()
       - pattern: |
           $VAR = new SimpleHttpInvokerServiceExporter()
-  - id: UnsafeHttpInvokerServiceExporter extends
+  - id: UnsafeHttpInvokerServiceExporter-extends
     metadata: *metadata
     languages: [java]
     severity: INFO
