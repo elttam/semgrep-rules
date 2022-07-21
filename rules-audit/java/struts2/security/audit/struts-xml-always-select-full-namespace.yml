@@ -18,6 +18,8 @@ rules:
       include:
         - struts*.xml
     patterns:
+      - pattern-inside: |
+          <constant $...STUFF />
       - pattern-either:
           - pattern: |
               <constant ... name='struts.mapper.alwaysSelectFullNamespace' ... value='$...MODE' ... />

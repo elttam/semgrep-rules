@@ -15,6 +15,7 @@ rev: heads/master-0-g371e480
     <constant name="struts.mapper.class"
         value="org.apache.struts2.dispatcher.mapper.Restful2ActionMapper" />
 
+    <!-- ok: struts-xml-always-select-full-namespace -->
     <constant name="struts.enable.SlashesInActionNames" value="true" />
 
     <!-- ruleid: struts-xml-always-select-full-namespace -->
