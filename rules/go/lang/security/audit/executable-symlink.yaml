@@ -1,0 +1,19 @@
+rules:
+  - id: Potential symlink takeover with os.Executable
+    message: >-
+      os.Executable()s behaviour varies between operating systems.
+      On Linux symlinks are followed, while on MacOS and Windows they are not.
+      Depending on context, this could lead to file replacement attacks and local privilege escalation.
+    metadata:
+      category: security
+      technology:
+        - golang
+    severity: WARNING
+    languages: [go]
+    patterns:
+      - pattern: |
+          $BIN, ... := os.Executable()
+      - pattern-not-inside: |
+          $BIN, ... := os.Executable()
+          ...
+          ..., ... := filepath.EvalSymlinks($BIN)

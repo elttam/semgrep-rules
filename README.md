@@ -45,6 +45,9 @@ These rules are focused on identifying vulnerabiltiies or other weaknesses.
 
 Rule Path                                            | Language | Technology | Description
 ---------------------------------------------------- | -------- | ---------- | -------------
+rules/go/lang/security/audit/executable-symlink      | Go       |            | Potential symlink takeover with os.Executable
+rules/go/lang/security/audit/sprintf-plain-string    | Go       |            | Sprintf unescaped control characters
+rules/go/lang/security/audit/uintptr-nonatomic       | Go       |            | Non-atomic use of converted uintptr
 java/lang/security/audit/crypto/gcm-static-iv        | Java     |            | Find GCM using same values for key and IV
 yaml/kubernetes/audit/network-policy-ingress-any     | YAML     | Kubernetes | Find container specs with `NetworkPolicy` with Ingress Permit ANY
 yaml/kubernetes/audit/privileged-container           | YAML     | Kubernetes | Find container specs with security context privileged
