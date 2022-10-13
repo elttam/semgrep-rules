@@ -8,7 +8,7 @@ import (
 )
 
 func sformat(s string) string {
-	sstring := fmt.Sprintf("s-formatted string: %s", s)
+	sstring := fmt.Sprintf("s-formatted string: %s asdf", s)
 	return sstring
 }
 
@@ -27,13 +27,13 @@ func main() {
 	inject := "adsf\u000a"
 
 
-	// ruleid: Sprintf unescaped control characters
+	// ruleid: sprintf-unescaped-control-characters
 	fmt.Println("path.join test: ", path.Join(URL, sformat(*args)))
-	// ruleid: Sprintf unescaped control characters
+	// ruleid: sprintf-unescaped-control-characters
 	fmt.Println("filepath.join test: ", filepath.Join(root, sformat(*args)))
-	// ruleid: Sprintf unescaped control characters
+	// ruleid: sprintf-unescaped-control-characters
 	fmt.Println("path.join test: ", path.Join(URL, sformat(inject)))
-	// ruleid: Sprintf unescaped control characters
+	// ruleid: sprintf-unescaped-control-characters
 	fmt.Println("filepath.join test: ", filepath.Join(root, sformat(inject)))
 
 	fmt.Println("path.join test: ", path.Join(URL, qformat(*args)))

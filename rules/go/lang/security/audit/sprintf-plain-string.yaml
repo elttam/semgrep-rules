@@ -1,24 +1,33 @@
 rules:
-  - id: Sprintf unescaped control characters
+  - id: sprintf-unescaped-control-characters
     message: >-
-      fmt.Sprintf()'s %s formatting verb does not escape control characters in a string, such as \u000a or backtick-enclosed
-      multilines.
-      This could lead to various vulnerabilities such as header injection, request smuggling, log injection, etc.
+      fmt.Sprintf()'s %s formatting verb does not escape control characters
+      in a string, such as \u000a or backtick-enclosed multilines. This could
+      lead to various vulnerabilities such as header injection, request
+      smuggling, log injection, etc.
     metadata:
       category: security
       technology:
         - golang
     severity: WARNING
-    languages: [go]
+    languages:
+      - go
     mode: taint
+    options:
+      symbolic_propagation: true
     pattern-sources:
       - patterns:
-          - pattern: |
-              fmt.Sprintf("$VERB", ...)
-          - pattern: |
-              "$VERB"
-          - pattern-regex: >-
-              ".*%s"
+          # Need the `...` at the end outside of the function
+          - pattern-inside: |
+              func $FUNC(...) $TYPE {
+                ...
+                return fmt.Sprintf("$VERB", ...)
+              }
+              ...
+          - metavariable-regex:
+              metavariable: $VERB
+              regex: .*%s
+          - pattern: $FUNC(...)
     pattern-sinks:
       - pattern: filepath.Join(...)
       - pattern: path.Join(...)
