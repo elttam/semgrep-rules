@@ -8,7 +8,7 @@ import (
 )
 
 func withEval() string {
-	// ok: Potential symlink takeover with os.Executable
+	// ok: potential-symlink-takeover-with-os.executable
 	execBin, _ := os.Executable()
 	result, err := filepath.EvalSymlinks(execBin)
 	if err != nil {
@@ -24,7 +24,7 @@ func withEval() string {
 }
 
 func withoutEval() string {
-	//ruleid: Potential symlink takeover with os.Executable
+	//ruleid: potential-symlink-takeover-with-os.executable
 	execBin, _ := os.Executable()
 	path, err := filepath.Abs(filepath.Dir(execBin))
 	if err != nil {

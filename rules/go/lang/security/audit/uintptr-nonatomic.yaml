@@ -1,5 +1,5 @@
 rules:
-  - id: Non-atomic use of converted uintptr
+  - id: non-atomic-use-of-converted-uintptr
     message: >-
       An unsafe.Pointer converted to an uintptr must be used in an atomic step.
       Without this it is not guaranteed that the memory location uintptr points to will contain the intended structure.
