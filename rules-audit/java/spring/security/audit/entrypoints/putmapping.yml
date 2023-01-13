@@ -10,6 +10,7 @@ rules:
       - pattern: |
           @org.springframework.web.bind.annotation.PutMapping(...)
           $RETURN $METHOD(...)
+      # unqualified
       - pattern: |
           @PutMapping(...)
           $RETURN $METHOD(...)
