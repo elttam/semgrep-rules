@@ -43,15 +43,17 @@ semgrep --config semgrep-rules/rules-audit semgrep-rules/rules-audit/
 These rules are focused on identifying vulnerabiltiies or other weaknesses.
 
 
-Rule Path                                            | Language | Technology | Description
----------------------------------------------------- | -------- | ---------- | -------------
-rules/go/lang/security/audit/executable-symlink      | Go       |            | Potential symlink takeover with os.Executable
-rules/go/lang/security/audit/sprintf-plain-string    | Go       |            | Sprintf unescaped control characters
-rules/go/lang/security/audit/uintptr-nonatomic       | Go       |            | Non-atomic use of converted uintptr
-java/lang/security/audit/crypto/gcm-static-iv        | Java     |            | Find GCM using same values for key and IV
-yaml/kubernetes/audit/network-policy-ingress-any     | YAML     | Kubernetes | Find container specs with `NetworkPolicy` with Ingress Permit ANY
-yaml/kubernetes/audit/privileged-container           | YAML     | Kubernetes | Find container specs with security context privileged
-yaml/kubernetes/security/allow-privileged-escalation | YAML     | Kubernetes | Find container specs, including init containers, allowing privilege escalation (`allowPrivilegeEscalation`)
+Rule Path                                             | Language | Technology | Description
+----------------------------------------------------- | -------- | ---------- | -------------
+rules/go/lang/security/audit/executable-symlink       | Go       |            | Potential symlink takeover with os.Executable
+rules/go/lang/security/audit/sprintf-plain-string     | Go       |            | Sprintf unescaped control characters
+rules/go/lang/security/audit/uintptr-nonatomic        | Go       |            | Non-atomic use of converted uintptr
+java/lang/security/audit/crypto/gcm-static-iv         | Java     |            | Find GCM using same values for key and IV
+yaml/kubernetes/audit/network-policy-ingress-any      | YAML     | Kubernetes | Find container specs with `NetworkPolicy` with Ingress Permit ANY
+yaml/kubernetes/audit/privileged-container            | YAML     | Kubernetes | Find container specs with security context privileged
+yaml/kubernetes/security/allow-privileged-escalation  | YAML     | Kubernetes | Find container specs, including init containers, allowing privilege escalation (`allowPrivilegeEscalation`)
+yaml/kubernetes/security/run-as-non-root              | YAML     | Kubernetes | Find container specs, allowing running as root (missing `runAsNonRoot`), considers pod and container security context [PR][Upstream PR 2630]
+yaml/kubernetes/security/run-as-non-root-unsafe-value | YAML     | Kubernetes | Find container specs, explicitly allowing running as root (`runAsNonRoot: false`), considers pod and container secuirity context [PR][Upstream PR 2630]
 
 
 ## Audit Focused Rules
@@ -73,4 +75,5 @@ java/xstream/security/audit/fromxml                  | Java     | XStream    | F
 
 
 
+[Upstream PR 2630]: https://github.com/returntocorp/semgrep-rules/pull/2630
 [elttam]: https://elttam.com/
