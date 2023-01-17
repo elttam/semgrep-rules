@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     name: run semgrep rules tests
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: run test
         id: semgrep-tests
         uses: returntocorp/semgrep-rules-test-action@master
