@@ -16,8 +16,8 @@ repos:
       - id: check-yaml
         exclude: |
           (?x)^(
-            # This is multi-document
-            rules/yaml/kubernetes/security/allow-privilege-escalation.test.yaml
+            # These are multi-document
+            rules/yaml/kubernetes/security/.*\.test\.yaml
           )$
   # Exception case - multi-document YAML OK - still check YAML
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -27,8 +27,8 @@ repos:
         args: [--allow-multiple-documents]
         files: |
           (?x)^(
-            # This is multi-document
-            rules/yaml/kubernetes/security/allow-privilege-escalation.test.yaml
+            # These are multi-document
+            rules/yaml/kubernetes/security/.*\.test\.yaml
           )$
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
     rev: 0.1.1
