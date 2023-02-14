@@ -74,3 +74,23 @@ spec:
         - name: c3
           securityContext:
             allowPrivilegeEscalation: true
+        # ruleid: allow-privilege-escalation
+        - name: envar-demo-container
+          env:
+            - name: DEMO_GREETING
+              value: Hello from the environment
+            - name: DEMO_FAREWELL
+              value: Such a sweet sorrow
+        # ruleid: allow-privilege-escalation
+        - name: nginxhttps
+          ports:
+            - name: http
+              port: 80
+          volumeDevices:
+            - name: my-volume
+              devicePath: /dev/block
+          volumeMounts:
+            - mountPath: /etc/nginx/ssl
+              name: secret-volume
+            - mountPath: /etc/nginx/conf.d
+              name: configmap-volume
