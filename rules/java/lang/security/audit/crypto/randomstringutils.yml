@@ -1,0 +1,22 @@
+rules:
+  - id: randomstringutils-insecure-rng
+    message: >-
+      RandomStringUtils uses java.util.Random by default which is not suitable for security
+    metadata:
+      cwe: 'CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)'
+      owasp: 'A9: Using Components with Known Vulnerabilities'
+      references:
+        - https://www.elttam.com/blog/cracking-randomness-in-java/
+      category: security
+      subcategory: audit
+      technology:
+        - Java
+        - Apache Commons Lang
+        - RandomStringUtils
+    languages: [java]
+    severity: WARNING
+    patterns:
+      - pattern: |
+          org.apache.commons.lang3.RandomStringUtils.$X(...)
+      - pattern-not-inside: |
+          org.apache.commons.lang3.RandomStringUtils.$X(..., new SecureRandom())
