@@ -1,0 +1,28 @@
+rules:
+  - id: flask-app-route-handler
+    message: >-
+      Flask HTTP route $ROUTE will handle $METHOD requests
+    severity: INFO
+    languages:
+      - python
+    metadata:
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: HIGH
+      technology:
+        - flask
+    patterns:
+      - pattern-inside: |
+          from flask import Flask
+          ...
+          $APP = Flask(...)
+          ...
+      - pattern: |
+          @$APP.$METHOD($ROUTE, ...)
+          def $HANDLER(...):
+            ...
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(route|get|post|put|patch|del|head|delete)$
