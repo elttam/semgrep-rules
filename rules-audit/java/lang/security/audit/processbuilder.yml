@@ -1,0 +1,45 @@
+rules:
+  # Calling `semgrep --pro-intrafile` will only find levels 0..1.
+  # Calling `semgrep --pro` will find levels 0..2, but there's a level 3.
+  - id: processbuilder
+    message: >-
+      ProcessBuilder in $METHOD()
+    #message: >-
+    #  ProcessBuilder in $CLASS.$METHOD()
+    severity: INFO
+    languages: [java]
+    mode: taint
+    metadata:
+      # without this `semgrep --pro` will only find level 0.
+      interfile: true
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
+      technology:
+        - java
+    pattern-sources:
+      - pattern: |
+          $RETURN $METHOD(...) {
+              ...
+          }
+      #- patterns:
+      #    - pattern-inside: |
+      #        class $CLASS {
+      #          ...
+      #        }
+      #    - pattern: |
+      #        $RETURN $METHOD(...) {
+      #          ...
+      #        }
+    pattern-sinks:
+      - pattern-either:
+          - pattern: |
+              new ProcessBuilder($CMD, ...)
+          - patterns:
+              - pattern-inside: |
+                  $TYPE $PB = new ProcessBuilder(...);
+                  ...
+              - pattern: |
+                  $PB.command($CMD, ...)
