@@ -1,0 +1,58 @@
+rules:
+  - id: express-mongodb-nosqli
+    message: Depending on the context, using (user-controlled) request data directly in a MongoDB query can lead to a NoSQLi
+      vulnerability.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A03:2021 – Injection
+      references:
+        - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05.6-Testing_for_NoSQL_Injection
+      category: security
+      technology:
+        - javascript
+      subcategory: vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: MEDIUM
+      interfile: true
+    languages:
+      # nosemgrep: yaml.semgrep.consistency.lang-consistency-js.lang-consistency-js
+      - javascript
+      # nosemgrep: yaml.semgrep.consistency.lang-consistency-ts.lang-consistency-ts
+      - typescript
+    severity: WARNING
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern: function($REQ, ...) { ... }
+          - pattern-either:
+              - pattern: $REQ.$USERDATA
+              - pattern: let { $USERDATA } = $REQ
+          - focus-metavariable: $REQ
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: req
+          - metavariable-regex:
+              metavariable: $USERDATA
+              regex: (body|params|query|cookies|headers)
+    pattern-sanitizers:
+      - patterns:
+          - pattern: $X.toString()
+          - focus-metavariable: $X
+    pattern-sinks:
+      - patterns:
+          - pattern-inside: |
+              $MODEL = require('$IMPORT')
+              ...
+          - metavariable-regex:
+              metavariable: $IMPORT
+              regex: .*(db|models|data|schema|mongo).*
+          - pattern-either:
+              - pattern: new $MODEL(...)
+              - patterns:
+                  - pattern: $MODEL.$FUNC(...)
+                  - metavariable-regex:
+                      metavariable: $FUNC
+                      regex: (find|delete|update|replace|where|create|insert|map|bulk|aggregate|count).*

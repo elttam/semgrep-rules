@@ -1,0 +1,35 @@
+rules:
+  - id: express-app-router-handler
+    message: >-
+      Express HTTP route $ROUTE will handle $METHOD requests
+    severity: INFO
+    languages:
+      # nosemgrep: yaml.semgrep.consistency.lang-consistency-js.lang-consistency-js
+      - javascript
+      # nosemgrep: yaml.semgrep.consistency.lang-consistency-ts.lang-consistency-ts
+      - typescript
+    metadata:
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: HIGH
+      technology:
+        - express
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern-inside: |
+                  $ROUTER = express.Router();
+                  ...
+              - pattern: |
+                  $ROUTER.$METHOD($ROUTE, ...)
+          - patterns:
+              - pattern-inside: |
+                  $ROUTER = express();
+                  ...
+              - pattern: |
+                  $ROUTER.$METHOD($ROUTE, ...)
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(get|post|put|patch|del|head|delete)$
