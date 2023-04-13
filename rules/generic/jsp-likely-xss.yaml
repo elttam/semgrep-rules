@@ -1,0 +1,41 @@
+rules:
+  - id: jsp-likely-xss
+    mode: join
+    severity: ERROR
+    message: >-
+      Detected a XSS vulnerability $VAR is rendered
+      unsafely in template
+    metadata:
+      category: security
+      subcategory: vuln
+      likelihood: LOW
+      impact: LOW
+      confidence: HIGH
+      semgrep-bugs:
+        - HTML Language Strict Processing Doesn't Allow Writing JSP etc https://github.com/returntocorp/semgrep/issues/5735
+        - Cannot reference metavariables in rule message in join mode https://github.com/returntocorp/semgrep/issues/5807
+      technology:
+        - html
+        - javascript
+    join:
+      rules:
+        # https://github.com/returntocorp/semgrep-rules/pull/2868
+        # nosemgrep: yaml.semgrep.metadata-technology.metadata-technology
+        - id: jsp-scriptlet-param
+          languages: [generic]
+          patterns:
+            - pattern-inside: |
+                <% ... %>
+            - pattern: |
+                $VAR = request.getParameter(...)
+        # https://github.com/returntocorp/semgrep-rules/pull/2868
+        # nosemgrep: yaml.semgrep.metadata-technology.metadata-technology
+        - id: template-vars
+          languages: [generic]
+          patterns:
+            - pattern-inside: |
+                <%= ... %>
+            - pattern: |
+                $VAR
+      on:
+        - jsp-scriptlet-param.$VAR == template-vars.$VAR

@@ -1,0 +1,22 @@
+<html>
+<head>
+<title>Tester</title>
+<link rel='stylesheet' href='../../../style.css' type='text/css'>
+</head>
+<body>
+<h1>View</h1>
+<%
+String foo = request.getParameter("bar");
+%>
+<!-- ruleid: jsp-likely-xss -->
+<a href="../../redirect.jsp?goto=<%=foo%>">Some Link</a>
+
+<a href="../../redirect.jsp?goto=<%=2*fooo%>">Some Link</a>
+<a href="../../redirect.jsp?goto=<%=bar*2%>">Some Link</a>
+
+<!-- ruleid: jsp-likely-xss -->
+<a href="../../redirect.jsp?goto=<%=meow foo meow%>">Some Link</a>
+
+<a href="../../redirect.jsp?goto=<%=notme%>">Some Link</a>
+</body>
+</html>
