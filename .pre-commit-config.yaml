@@ -9,12 +9,12 @@ repos:
       - id: check-symlinks
       - id: trailing-whitespace
       - id: end-of-file-fixer
-  # Normally case - single document YAML only
+  # Normal case - single document YAML only
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.5.0
     hooks:
       - id: check-yaml
-        exclude: |
+        exclude: &multi-line-yaml |
           (?x)^(
             # These are multi-document
             rules/yaml/kubernetes/security/.*\.test\.yaml
@@ -24,13 +24,9 @@ repos:
     rev: v2.5.0
     hooks:
       - id: check-yaml
-        name: Check Yaml (Multi-documents)
         args: [--allow-multiple-documents]
-        files: |
-          (?x)^(
-            # These are multi-document
-            rules/yaml/kubernetes/security/.*\.test\.yaml
-          )$
+        files: *multi-line-yaml
+  # Normal case - single document YAML only
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
     rev: 0.1.1
     hooks:
@@ -42,6 +38,20 @@ repos:
         # BEN: sequence and offset differ from upstream semgrep, I like my style better
         # but this may cause issues if upstreaming rules to their repo.
         args: [--width, '120', --implicit_start, --mapping, '2', --sequence, '4', --offset, '2']
+        exclude: *multi-line-yaml
+  # Exception case - multi-document YAML OK - still check YAML
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.1.1
+    hooks:
+      - id: yamlfmt
+        language_version: python3.10
+        # NOTE: If you change these settings, be sure to also
+        # change the semgrep.live YAML settings, otherwise diffs will fail
+        # to lint
+        # BEN: sequence and offset differ from upstream semgrep, I like my style better
+        # but this may cause issues if upstreaming rules to their repo.
+        args: [--width, '120', --mapping, '2', --sequence, '4', --offset, '2']
+        files: *multi-line-yaml
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.1.9
     hooks:
