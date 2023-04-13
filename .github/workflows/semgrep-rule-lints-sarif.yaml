@@ -1,0 +1,70 @@
+# Based off https://semgrep.dev/docs/semgrep-ci/sample-ci-configs/#sample-github-actions-configuration-file
+# - Alternate job that uploads findings to GitHub Advanced Security Dashboard
+# - Stand-alone SAST
+
+# Name of this GitHub Actions workflow.
+name: Semgrep Lint Sarif
+
+on:
+  # Scan changed files in PRs (diff-aware scanning):
+  pull_request: {}
+  # Scan mainline branches and report all findings:
+  push:
+    branches: [master, main]
+  # Schedule the CI job (this method uses cron syntax):
+  schedule:
+    - cron: 20 17 * * *   # Sets Semgrep to scan every day at 17:20 UTC.
+    # It is recommended to change the schedule to a random time.
+
+jobs:
+  semgrep:
+    # User-definable name of this GitHub Actions job:
+    name: Scan
+    # If you are self-hosting, change the following `runs-on` value:
+    runs-on: ubuntu-latest
+
+    container:
+      # A Docker image with Semgrep installed. Do not change this.
+      image: returntocorp/semgrep
+
+    # Skip any PR created by dependabot to avoid permission issues:
+    if: (github.actor != 'dependabot[bot]')
+
+    steps:
+      # Fetch project source with GitHub Actions Checkout.
+      - uses: actions/checkout@v3
+      # Run the "semgrep ci" command on the command line of the docker image.
+      - run: semgrep ci --sarif --output=semgrep.sarif
+        env:
+          # Add the rules that Semgrep uses by setting the SEMGREP_RULES environment variable.
+          # more at semgrep.dev/explore
+          # Space separated https://semgrep.dev/docs/semgrep-ci/configuration-reference/#semgrep_rules
+          SEMGREP_RULES: >-
+            p/default
+            p/semgrep-rule-lints
+            r/yaml.semgrep.duplicate-id
+            r/yaml.semgrep.duplicate-pattern
+            r/yaml.semgrep.unsatisfiable
+            r/yaml.semgrep.empty-message
+            r/yaml.semgrep.missing-message-field
+            r/yaml.semgrep.missing-language-field
+            r/yaml.semgrep.metadata-confidence
+            r/yaml.semgrep.metadata-likelihood
+            r/yaml.semgrep.metadata-impact
+            r/yaml.semgrep.metadata-subcategory
+            r/yaml.semgrep.metadata-confidence-incorrect-value
+            r/yaml.semgrep.metadata-likelihood-incorrect-value
+            r/yaml.semgrep.metadata-impact-incorrect-value
+            r/yaml.semgrep.metadata-subcategory-incorrect-value
+            r/yaml.semgrep.metadata-technology
+            r/yaml.semgrep.metadata-category
+            r/yaml.semgrep.multi-line-message
+            r/yaml.semgrep.message-whitespace
+            r/yaml.semgrep.metadata-deepsemgrep
+            r/yaml.semgrep.slow-pattern-top-ellipsis
+            r/yaml.semgrep.rule-missing-deconstructed-value
+      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: semgrep.sarif
+        if: always()
