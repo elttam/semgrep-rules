@@ -1,0 +1,59 @@
+rules:
+  - id: php-filter-chain-read-from-oracle
+    message: Detected possible file read caused by the the error-based oracle of PHP filter chains. It can be used to leak
+      the content of a local file when passed to vulnerable functions even when the server does not return the file content.
+    metadata:
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
+      cwe: |
+        CWE-98: Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')
+      docs:
+        - https://www.synacktiv.com/publications/php-filter-chains-file-read-from-error-based-oracle
+        - https://github.com/synacktiv/php_filter_chains_oracle_exploit
+        - https://github.com/DownUnderCTF/Challenges_2022_Public/blob/main/web/minimal-php/solve/solution.py
+      technology:
+        - php
+      owasp:
+        - A03:2021 - Injection
+    languages:
+      - php
+    severity: ERROR
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern: $X
+          - metavariable-regex:
+              metavariable: $X
+              regex: ^\$_(GET|POST|REQUEST|COOKIE|FILES)
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  if ( <... is_uploaded_file(...) ...>) { ... } else { ... }
+              - pattern-inside: |
+                  if ( <... file_exists(...) ...>) { ... } else { ... }
+              - pattern-inside: |
+                  if ( <... is_file(...) ...>) { ... } else { ... }
+              - pattern: |
+                  $VAR += "..."
+              - pattern: |
+                  $VAR + "..."
+              - pattern: |
+                  $VAR . "..."
+              - pattern: |
+                  "..." += $VAR
+              - pattern: |
+                  "..." + $VAR
+              - pattern: |
+                  "..." . $VAR
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: $FUNC(...);
+              - pattern-inside: $INFO->$FUNC(...);
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: \b(?i)(file_get_contents|readfile|file|getimagesize|md5_file|sha1_file|hash_file|parse_ini_file|copy|file_put_contents|stream_get_contents|fgets|fread|fgetc|fgetcsv|fpassthru|fputs)\b
