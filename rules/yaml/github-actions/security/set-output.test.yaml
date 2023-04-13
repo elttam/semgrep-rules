@@ -1,0 +1,68 @@
+name: set-output-test
+jobs:
+  test:
+    steps:
+      - name: Save state Bad
+        # ruleid: set-output
+        run: echo "::set-output name={name}::{value}"
+      - name: Save state Bad
+        # ruleid: set-output
+        run: |
+          echo something
+          echo "::set-output name={name}::{value}"
+      - name: Save state Bad
+        # ruleid: set-output
+        run: |-
+          echo something
+          echo "::set-output name={name}::{value}"
+      - name: Save state Bad
+        # ruleid: set-output
+        run: |+
+          echo something
+          echo "::set-output name={name}::{value}"
+
+      - name: Save state Bad
+        # ruleid: set-output
+        run: >
+          echo something
+          echo "::set-output name={name}::{value}"
+      - name: Save state Bad
+        # ruleid: set-output
+        run: >-
+          echo something
+          echo "::set-output name={name}::{value}"
+      - name: Save state Bad
+        # ruleid: set-output
+        run: >+
+          echo something
+          echo "::set-output name={name}::{value}"
+
+      - name: Save state Bad
+        # ruleid: set-output
+        run: echo "::set-output name={name}::{value}"
+        shell: bash
+      - name: Save state Bad
+        # ruleid: set-output
+        run: Write-Output "::set-output name={name}::{value}"
+        shell: pwsh
+      - name: Save state Bad
+        # ruleid: set-output
+        run: print("::set-output name={name}::{value}")
+        shell: python
+      - name: Save state Bad
+        # ruleid: set-output
+        run: echo "::set-output name={name}::{value}"
+        shell: sh
+      - name: Save state Bad
+        # ruleid: set-output
+        run: echo "::set-output name={name}::{value}"
+        shell: cmd
+      - name: Save state Bad
+        # ruleid: set-output
+        run: Write-Output "::set-output name={name}::{value}"
+        shell: powershell
+
+
+      - name: Save state Good
+        # ok: set-output
+        run: echo "{name}={value}" >> $GITHUB_STATE

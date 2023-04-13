@@ -1,0 +1,32 @@
+rules:
+  - id: save-state
+    message: >-
+      ::save-state workflow command is deprecated,
+      use GITHUB_STATE environment file instead.
+    metadata:
+      category: security
+      subcategory: audit
+      references:
+        - https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
+      technology:
+        - github-actions
+      likelihood: MEDIUM
+      impact: LOW
+      confidence: LOW
+    languages: [yaml]
+    severity: INFO
+    patterns:
+      - pattern-inside: |
+          steps:
+            ...
+      - pattern-inside: |
+          run:
+            ...
+      - pattern: |
+          run: $RUN
+      - metavariable-pattern:
+          # Since we are just looking for the workflow-command, should work for bash and powershell
+          language: generic
+          metavariable: $RUN
+          pattern: |
+            ::save-state
