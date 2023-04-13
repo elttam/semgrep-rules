@@ -1,0 +1,31 @@
+rules:
+  - id: aspnet-controller-entrypoint
+    message: HTTP endpoint $ROUTE$PATH will handle $METHOD requests
+    severity: INFO
+    metadata:
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
+      technology:
+        - .net
+        - mvc
+    languages:
+      - csharp
+    patterns:
+      - pattern-inside: |
+          [Route("$ROUTE")]
+          public class $CLASS : Controller {
+            ...
+          }
+      - pattern-either:
+          - pattern: |
+              [$METHOD("$PATH")]
+              public $_ $HANDLER(...) { ... }
+          - pattern: |
+              [$METHOD]
+              public $_ $HANDLER(...) { ... }
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: (HttpHead|HttpGet|HttpPost|HttpDelete|HttpPut|HttpPatch)
