@@ -40,7 +40,6 @@ jobs:
           # more at semgrep.dev/explore
           # Space separated https://semgrep.dev/docs/semgrep-ci/configuration-reference/#semgrep_rules
           SEMGREP_RULES: >-
-            p/default
             p/semgrep-rule-lints
             r/yaml.semgrep.duplicate-id
             r/yaml.semgrep.duplicate-pattern
