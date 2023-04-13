@@ -6,6 +6,10 @@ rules:
     languages: [java]
     metadata:
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - JVM
         - Struts2

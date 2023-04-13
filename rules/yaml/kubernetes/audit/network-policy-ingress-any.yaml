@@ -11,6 +11,11 @@ rules:
     message: >-
       NetworkPolicy with Ingress Permit ANY
     metadata:
+      category: security
+      subcategory: audit
+      likelihood: MEDIUM
+      impact: LOW
+      confidence: HIGH
       technology:
         - kubernetes
       references:

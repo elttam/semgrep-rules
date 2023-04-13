@@ -11,6 +11,10 @@ rules:
         - https://struts.apache.org/core-developers/action-configuration.html#dynamic-method-invocation
         - https://cwiki.apache.org/confluence/display/WW/S2-019
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - JVM
         - Struts2

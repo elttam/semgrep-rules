@@ -7,6 +7,10 @@ rules:
     metadata: &metadata
       docs: https://docs.oracle.com/javaee/7/api/index.html?javax/ws/rs/$METHOD.html
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - JVM
         - jax-rs

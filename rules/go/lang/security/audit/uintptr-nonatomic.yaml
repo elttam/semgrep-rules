@@ -5,6 +5,10 @@ rules:
       Without this it is not guaranteed that the memory location uintptr points to will contain the intended structure.
     metadata:
       category: security
+      subcategory: vuln
+      likelihood: MEDIUM
+      impact: MEDIUM
+      confidence: MEDIUM
       technology:
         - golang
     severity: WARNING

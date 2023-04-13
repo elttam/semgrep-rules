@@ -13,6 +13,11 @@ rules:
     message: >-
       Privileged Container $IMAGE
     metadata:
+      category: security
+      subcategory: audit
+      likelihood: MEDIUM
+      impact: LOW
+      confidence: HIGH
       technology:
         - kubernetes
       references:

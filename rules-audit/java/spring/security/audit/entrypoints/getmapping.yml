@@ -1,8 +1,17 @@
 rules:
   - id: rest-GetMapping
+    # Can't access $CLASS from `pattern-inside`
+    message: >-
+      Entrypoint $METHOD GET $PATH
+    severity: INFO
+    languages: [java]
     metadata:
       docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - spring
         - spring-framework
@@ -39,8 +48,3 @@ rules:
       - pattern: |
           @GetMapping(...)
           $RETURN $METHOD(...)
-    # Can't access $CLASS from `pattern-inside`
-    message: >-
-      Entrypoint $METHOD GET $PATH
-    severity: INFO
-    languages: [java]

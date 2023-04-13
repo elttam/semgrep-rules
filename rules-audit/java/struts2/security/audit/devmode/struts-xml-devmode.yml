@@ -11,6 +11,10 @@ rules:
         - https://struts.apache.org/core-developers/constant-configuration
         - https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - JVM
         - Struts2

@@ -40,6 +40,11 @@ rules:
       Container $NAME allows for privilege escalation via setuid or setgid binaries.
       Add 'allowPrivilegeEscalation: false' in 'securityContext' to prevent this.
     metadata:
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: HIGH
       technology:
         - kubernetes
       references:

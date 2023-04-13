@@ -7,6 +7,10 @@ rules:
       smuggling, log injection, etc.
     metadata:
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: MEDIUM
       technology:
         - golang
     severity: WARNING

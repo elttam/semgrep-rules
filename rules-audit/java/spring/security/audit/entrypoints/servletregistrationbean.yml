@@ -1,10 +1,18 @@
 rules:
   - id: rest-servletregistrationbean
+    message: >-
+      ServletRegistrationBean SERVLET $ALWAYS_MAP_URL $URL_MAPPINGS
+    severity: INFO
+    languages: [java]
     metadata:
       docs:
         - https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/web/servlet/ServletRegistrationBean.html
         - https://www.baeldung.com/register-servlet
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - JVM
         - spring
@@ -17,7 +25,3 @@ rules:
           new ServletRegistrationBean($SERVLET, $URL_MAPPINGS)
       - pattern: |
           new ServletRegistrationBean<>($SERVLET, $URL_MAPPINGS)
-    message: >-
-      ServletRegistrationBean SERVLET $ALWAYS_MAP_URL $URL_MAPPINGS
-    severity: INFO
-    languages: [java]

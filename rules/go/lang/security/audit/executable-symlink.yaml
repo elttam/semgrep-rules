@@ -6,6 +6,10 @@ rules:
       Depending on context, this could lead to file replacement attacks and local privilege escalation.
     metadata:
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - golang
     severity: WARNING

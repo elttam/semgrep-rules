@@ -7,6 +7,10 @@ rules:
     metadata:
       docs: https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/ext/Provider.html
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - JVM
         - jax-rs

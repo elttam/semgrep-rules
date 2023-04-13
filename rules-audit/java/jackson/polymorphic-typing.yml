@@ -1,5 +1,11 @@
 rules:
   - id: polymorphic-typing
+    message: >-
+      Jackson Polymorphic Typing: This rule is to detect any instances of polymorphic typing to aid in determining vulnerable
+      Jackson deserialization issues. Check if deserializing untrusted JSON to a nominal type such as `java.lang.Object` or
+      permissive tag interfaces such as `java.io.Serializable` or `java.lang.Comparable` is occuring.
+    severity: INFO
+    languages: [java]
     metadata:
       cwe: 'CWE-502: Deserialization of Untrusted Data'
       owasp: 'A8: Insecure Deserialization'
@@ -8,6 +14,10 @@ rules:
         - https://www.nccgroup.trust/globalassets/our-research/us/whitepapers/2018/jackson_deserialization.pdf
         - https://medium.com/@cowtowncoder/on-jackson-cves-dont-panic-here-is-what-you-need-to-know-54cd0d6e8062
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - jackson
         - jackson-databind
@@ -24,9 +34,3 @@ rules:
           @JsonTypeInfo(...)
       - pattern: |
           @JsonSubTypes(...)
-    message: >-
-      Jackson Polymorphic Typing: This rule is to detect any instances of polymorphic typing to aid in determining vulnerable
-      Jackson deserialization issues. Check if deserializing untrusted JSON to a nominal type such as `java.lang.Object` or
-      permissive tag interfaces such as `java.io.Serializable` or `java.lang.Comparable` is occuring.
-    severity: INFO
-    languages: [java]

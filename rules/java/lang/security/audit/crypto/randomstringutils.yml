@@ -9,6 +9,9 @@ rules:
         - https://www.elttam.com/blog/cracking-randomness-in-java/
       category: security
       subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - Java
         - Apache Commons Lang

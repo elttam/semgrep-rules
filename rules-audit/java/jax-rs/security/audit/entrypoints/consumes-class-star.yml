@@ -8,6 +8,10 @@ rules:
       docs:
         - https://docs.oracle.com/javaee/7/api/javax/ws/rs/Consumes.html
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - JVM
         - jax-rs

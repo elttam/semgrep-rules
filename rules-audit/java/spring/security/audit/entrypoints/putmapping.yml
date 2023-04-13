@@ -1,8 +1,16 @@
 rules:
   - id: rest-PutMapping
+    message: >-
+      Entrypoint PUT $METHOD
+    severity: INFO
+    languages: [java]
     metadata:
       docs: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - spring
         - spring-framework
@@ -14,7 +22,3 @@ rules:
       - pattern: |
           @PutMapping(...)
           $RETURN $METHOD(...)
-    message: >-
-      Entrypoint PUT $METHOD
-    severity: INFO
-    languages: [java]

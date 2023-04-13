@@ -9,18 +9,24 @@ rules:
       docs:
         - https://docs.oracle.com/javaee/7/api/index.html?javax/ws/rs/HttpMethod.html
       category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
       technology:
         - JVM
         - jax-rs
     pattern-either:
-      # partial statements for interaces not supported unlike class, so need
+      # partial statements for interfaces not supported unlike class, so need
       # the `{ ... }` to parse
+      # Fully Qualified - new jakarta name
       - pattern: |
           @jakarta.ws.rs.HttpMethod($METHOD)
           @java.lang.annotation.Target($TARGET)
           interface $INTERFACE {
             ...
           }
+      # Fully Qualified - old javax name
       - pattern: |
           @javax.ws.rs.HttpMethod($METHOD)
           @java.lang.annotation.Target($TARGET)
