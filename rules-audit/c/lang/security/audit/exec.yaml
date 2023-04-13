@@ -1,0 +1,33 @@
+rules:
+  - id: exec
+    message: >-
+      Process execution detected $EXEC
+    severity: INFO
+    metadata:
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
+      technology:
+        - c
+    languages:
+      - c
+    pattern-either:
+      - patterns:
+          - pattern: |
+              $EXEC(...)
+          - metavariable-regex:
+              metavariable: $EXEC
+              regex: >-
+                ^(exec|execl|execle|execlp|execv|execve|execvp|exect|fexecve|spawn|spawnp|__spawn2|__spawnp2|posix_spawn|posix_spawnp|system|clone|clone3|sys_clone3)$
+      - patterns:
+          # There's other ways like `_syscallX(...)` macro in unistd.h
+          # glibc doesn't provide `clone3` so solution is to use `syscall()`
+          - pattern: |
+              syscall($SYSCALL, ...)
+          - metavariable-regex:
+              metavariable: $SYSCALL
+              # XXX Is `sys_XXX` valid here?
+              regex: >-
+                (sys_|__NR_)(exec|execl|execle|execlp|execv|execve|execvp|exect|fexecve|spawn|spawnp|__spawn2|__spawnp2|posix_spawn|posix_spawnp|system|clone|clone3)
