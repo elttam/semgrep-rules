@@ -1,0 +1,45 @@
+rules:
+  - id: spark-route-handler
+    message: >-
+      Spark HTTP route $ROUTE will handle $METHOD requests
+    severity: INFO
+    languages:
+      - kotlin
+    metadata:
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: LOW
+      technology:
+        - spark
+    patterns:
+      - pattern-either:
+
+          # instance api
+          - patterns:
+              - pattern-either:
+                  - pattern-inside: |
+                      val $HTTP: Http = ...
+                      ...
+                  - pattern-inside: |
+                      val $HTTP = ignite()
+                      ...
+              - pattern: |
+                  $HTTP.$METHOD($ROUTE) { ... }
+
+          # static api
+          - pattern: |
+              $METHOD($ROUTE, ...)
+
+          - patterns:
+              - pattern-inside: |
+                  path($PATH) {
+                    ...
+                  }
+              - pattern: |
+                  $METHOD($ROUTE, ...)
+
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(get|post|put|patch|del|head|delete)$
