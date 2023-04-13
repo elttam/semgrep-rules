@@ -43,36 +43,45 @@ semgrep --config semgrep-rules/rules-audit semgrep-rules/rules-audit/
 These rules are focused on identifying vulnerabiltiies or other weaknesses.
 
 
-Rule Path                                             | Language | Technology     | Description
------------------------------------------------------ | -------- | -------------- | -------------
-rules/go/lang/security/audit/executable-symlink       | Go       |                | Potential symlink takeover with os.Executable
-rules/go/lang/security/audit/sprintf-plain-string     | Go       |                | Sprintf unescaped control characters
-rules/go/lang/security/audit/uintptr-nonatomic        | Go       |                | Non-atomic use of converted uintptr
-java/lang/security/audit/crypto/gcm-static-iv         | Java     |                | Find GCM using same values for key and IV
-java/lang/security/audit/crypto/randomstringutils     | Java     | Apache Commons | Find RandomStringUtils using default java.util.Random, which is not suiatble for security
-yaml/kubernetes/audit/network-policy-ingress-any      | YAML     | Kubernetes     | Find container specs with `NetworkPolicy` with Ingress Permit ANY
-yaml/kubernetes/audit/privileged-container            | YAML     | Kubernetes     | Find container specs with security context privileged
-yaml/kubernetes/security/allow-privileged-escalation  | YAML     | Kubernetes     | Find container specs, including init containers, allowing privilege escalation (`allowPrivilegeEscalation`)
-yaml/kubernetes/security/run-as-non-root              | YAML     | Kubernetes     | Find container specs, allowing running as root (missing `runAsNonRoot`), considers pod and container security context [PR][Upstream PR 2630]
-yaml/kubernetes/security/run-as-non-root-unsafe-value | YAML     | Kubernetes     | Find container specs, explicitly allowing running as root (`runAsNonRoot: false`), considers pod and container secuirity context [PR][Upstream PR 2630]
+Rule Path                                                   | Language | Technology     | Description
+----------------------------------------------------------- | -------- | -------------- | -------------
+generic/jsp-likely-xss                                      | Generic  | JSP            | Detect XSS with unsafe rendering in template
+go/lang/security/audit/executable-symlink                   | Go       |                | Potential symlink takeover with os.Executable
+go/lang/security/audit/sprintf-plain-string                 | Go       |                | Sprintf unescaped control characters
+go/lang/security/audit/uintptr-nonatomic                    | Go       |                | Non-atomic use of converted uintptr
+java/lang/security/audit/crypto/gcm-static-iv               | Java     |                | Find GCM using same values for key and IV
+java/lang/security/audit/crypto/randomstringutils           | Java     | Apache Commons | Find RandomStringUtils using default java.util.Random, which is not suiatble for security
+java/spring/security/audit/remoting/                        | Java     | Spring         | Find use of Spring Remoting
+yaml/github-actions/security/save-state                     | YAML     | Github-Actions | Find use of unsafe and deprecated `::save-state`
+yaml/github-actions/security/set-output                     | YAML     | Github-Actions | Find use of unsafe and deprecated `::set-output`
+yaml/kubernetes/audit/network-policy-ingress-any            | YAML     | Kubernetes     | Find container specs with `NetworkPolicy` with Ingress Permit ANY
+yaml/kubernetes/audit/privileged-container                  | YAML     | Kubernetes     | Find container specs with security context privileged
+yaml/kubernetes/security/allow-privileged-escalation        | YAML     | Kubernetes     | Find container specs, including init containers, allowing privilege escalation (`allowPrivilegeEscalation`)
+yaml/kubernetes/security/no-security-context                | YAML     | Kubernetes     | Find containers specs, with no security context, considers pod or container security context.
+yaml/kubernetes/security/run-as-non-root                    | YAML     | Kubernetes     | Find container specs, allowing running as root (missing `runAsNonRoot`), considers pod and container security context [PR][Upstream PR 2630]
+yaml/kubernetes/security/run-as-non-root-unsafe-value       | YAML     | Kubernetes     | Find container specs, explicitly allowing running as root (`runAsNonRoot: false`), considers pod and container secuirity context [PR][Upstream PR 2630]
 
 
 ## Audit Focused Rules
 
 These rules are useful for aiding manual source code review by identifying interesting behaviour or enumerating entrypoints.
 
-Rule Path                                            | Language | Technology | Description
----------------------------------------------------- | -------- | ---------- | -------------
-java/jackson/polymorphic-typing                      | Java     | Jackson    | Find polymorphic typing to aid in finding vulnerable Jackson deserialisation issues.
-java/jackson/type-resolver-override                  | Java     | Jackson    | Find polymorphic typing using `TypeResolveBuilder`
-java/jax-rs/security/audit/entrypoints/              | Java     | JAX-RS     | Find JAX-RS REST entrypoints
-java/spring/security/audit/entrypoints/              | Java     | Spring     | Find Spring REST entrypoints
-java/spring/security/audit/remoting/                 | Java     | Spring     | Find use of Spring Remoting
-java/struts2/security/audit/devmode/                 | Java     | Struts2    | Find the use of `devMode`
-java/struts2/security/audit/dmi/                     | Java     | Struts2    | Find the use of Dynamic Method Invocation
-java/struts2/security/audit/entrypoints/             | Java     | Struts2    | Find Struts2 REST entrypoints
-java/xstream/security/audit/fromxml                  | Java     | XStream    | Find use of `XStream.fromXML(...)`
-
+Rule Path                                                   | Language | Technology     | Description
+----------------------------------------------------------- | -------- | -------------- | -------------
+c/lang/security/audit/exec                                  | C        |                | Find execution of processes
+csharp/dotnet/security/audit/entrypoints/apsnet-controller  | C#       | ASP.NET        | Find ASP.NET REST entrypoints
+java/jackson/polymorphic-typing                             | Java     | Jackson        | Find polymorphic typing to aid in finding vulnerable Jackson deserialisation issues.
+java/jackson/type-resolver-override                         | Java     | Jackson        | Find polymorphic typing using `TypeResolveBuilder`
+java/jax-rs/security/audit/entrypoints/                     | Java     | JAX-RS         | Find JAX-RS REST entrypoints
+java/lang/security/audit/processbuilder                     | Java     |                | Find execution of processes with `ProcessBuilder`
+java/spring/security/audit/entrypoints/                     | Java     | Spring         | Find Spring REST entrypoints
+java/struts2/security/audit/devmode/                        | Java     | Struts2        | Find the use of `devMode`
+java/struts2/security/audit/dmi/                            | Java     | Struts2        | Find the use of Dynamic Method Invocation
+java/struts2/security/audit/entrypoints/                    | Java     | Struts2        | Find Struts2 REST entrypoints
+java/xstream/security/audit/fromxml                         | Java     | XStream        | Find use of `XStream.fromXML(...)`
+kotlin/spark/security/audit/entrypoints/                    | Kotlin   | Spark          | Find Spark REST entrypoints
+php/php-filter-chain-read-from-oracle                       | PHP      |                | Detect possible PHP filter chain error based oracle
+python/flask/security/audit/entrypoints/                    | Python   | Flask          | Find Flask REST entrypoints
 
 
 
