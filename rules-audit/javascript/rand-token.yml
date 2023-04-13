@@ -1,0 +1,61 @@
+rules:
+  - id: rand-token-insecure-rng
+    message: >-
+      rand-token defaults to using `crypto.pseudoRandomBytes`, insecure RNG
+    metadata:
+      cwe: |
+        CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)
+      owasp:
+        - A06:2021 – Vulnerable and Outdated Components
+        - A09:2017 - Using Components with Known Vulnerabilities
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: LOW
+      confidence: HIGH
+      technology:
+        - node
+        - rand-token
+    # nosemgrep: yaml.semgrep.consistency.lang-consistency-js.lang-consistency-js
+    languages: [javascript]
+    severity: WARNING
+    pattern-either:
+      - pattern: |
+          require('rand-token').uid
+      - pattern: |
+          require('rand-token').suid
+      - pattern: |
+          require('rand-token').generate
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  var $RANDTOKEN = require('rand-token');
+                  ...
+              - pattern-inside: |
+                  import * as $RANDTOKEN from 'rand-token';
+                  ...
+              - pattern-inside: |
+                  import $RANDTOKEN from 'rand-token';
+                  ...
+          - pattern: |
+              $RANDTOKEN.generate
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  var $GENERATOR = require('rand-token').generator(...)
+                  ...
+              - pattern-inside: |
+                  var $RANDTOKEN = require('rand-token')
+                  ...
+                  var $GENERATOR = $RANDTOKEN.generator(...)
+                  ...
+          - pattern-not-inside: |
+              var $GENERATOR = require('rand-token').generator({source: crypto.randomBytes})
+              ...
+          - pattern-not-inside: |
+              var $RANDTOKEN = require('rand-token')
+              ...
+              var $GENERATOR = $RANDTOKEN.generator({source: crypto.randomBytes})
+              ...
+          - pattern: |
+              $GENERATOR.generate
