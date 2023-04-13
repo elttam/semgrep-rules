@@ -17,6 +17,7 @@ rules:
       technology:
         - html
         - javascript
+        - JSP
     join:
       rules:
         # https://github.com/returntocorp/semgrep-rules/pull/2868
