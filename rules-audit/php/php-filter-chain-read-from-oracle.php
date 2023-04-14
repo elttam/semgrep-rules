@@ -1,6 +1,10 @@
 <?PHP
 // ruleid: php-filter-chain-read-from-oracle
 file_get_contents($_POST[0]);
+// ok: php-filter-chain-read-from-oracle
+file_get_contents($_POST[0] + "asdf");
+// ok: php-filter-chain-read-from-oracle
+file_get_contents("asdf" + $_POST[0]);
 // ruleid: php-filter-chain-read-from-oracle
 readfile($_POST[0]);
 // ruleid: php-filter-chain-read-from-oracle

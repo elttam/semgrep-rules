@@ -29,26 +29,25 @@ rules:
               metavariable: $X
               regex: ^\$_(GET|POST|REQUEST|COOKIE|FILES)
     pattern-sanitizers:
-      - patterns:
-          - pattern-either:
-              - pattern-inside: |
-                  if ( <... is_uploaded_file(...) ...>) { ... } else { ... }
-              - pattern-inside: |
-                  if ( <... file_exists(...) ...>) { ... } else { ... }
-              - pattern-inside: |
-                  if ( <... is_file(...) ...>) { ... } else { ... }
-              - pattern: |
-                  $VAR += "..."
-              - pattern: |
-                  $VAR + "..."
-              - pattern: |
-                  $VAR . "..."
-              - pattern: |
-                  "..." += $VAR
-              - pattern: |
-                  "..." + $VAR
-              - pattern: |
-                  "..." . $VAR
+      - pattern-either:
+          - pattern-inside: |
+              if ( <... is_uploaded_file(...) ...>) { ... } else { ... }
+          - pattern-inside: |
+              if ( <... file_exists(...) ...>) { ... } else { ... }
+          - pattern-inside: |
+              if ( <... is_file(...) ...>) { ... } else { ... }
+          - pattern: |
+              $VAR += "..."
+          - pattern: |
+              $VAR + "..."
+          - pattern: |
+              $VAR . "..."
+          - pattern: |
+              "..." += $VAR
+          - pattern: |
+              "..." + $VAR
+          - pattern: |
+              "..." . $VAR
     pattern-sinks:
       - patterns:
           - pattern-either:
