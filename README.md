@@ -52,6 +52,7 @@ go/lang/security/audit/uintptr-nonatomic                    | Go       |        
 java/lang/security/audit/crypto/gcm-static-iv               | Java     |                | Find GCM using same values for key and IV
 java/lang/security/audit/crypto/randomstringutils           | Java     | Apache Commons | Find RandomStringUtils using default java.util.Random, which is not suiatble for security
 java/spring/security/audit/remoting/                        | Java     | Spring         | Find use of Spring Remoting
+php/php-filter-chain-read-from-oracle                       | PHP      |                | Detect possible PHP filter chain error based oracle
 yaml/github-actions/security/save-state                     | YAML     | Github-Actions | Find use of unsafe and deprecated `::save-state`
 yaml/github-actions/security/set-output                     | YAML     | Github-Actions | Find use of unsafe and deprecated `::set-output`
 yaml/kubernetes/audit/network-policy-ingress-any            | YAML     | Kubernetes     | Find container specs with `NetworkPolicy` with Ingress Permit ANY
@@ -80,7 +81,6 @@ java/struts2/security/audit/dmi/                            | Java     | Struts2
 java/struts2/security/audit/entrypoints/                    | Java     | Struts2        | Find Struts2 REST entrypoints
 java/xstream/security/audit/fromxml                         | Java     | XStream        | Find use of `XStream.fromXML(...)`
 kotlin/spark/security/audit/entrypoints/                    | Kotlin   | Spark          | Find Spark REST entrypoints
-php/php-filter-chain-read-from-oracle                       | PHP      |                | Detect possible PHP filter chain error based oracle
 python/flask/security/audit/entrypoints/                    | Python   | Flask          | Find Flask REST entrypoints
 
 
