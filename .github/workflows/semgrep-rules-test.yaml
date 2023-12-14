@@ -15,7 +15,7 @@ jobs:
       - name: run test
         id: semgrep-tests
         uses: returntocorp/semgrep-rules-test-action@master
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: tests
