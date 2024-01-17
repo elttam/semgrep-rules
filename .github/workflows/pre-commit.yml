@@ -17,7 +17,7 @@ jobs:
         # `python --version --version` (twice) is deliberate, as it gets even more info
         # `Python 3.10.10` vs `Python 3.10.10 (main, Feb  9 2023, 02:08:14) [GCC 12.2.1 20220924]`
         run: echo "PY=$(python --version --version | sha256sum | cut -d' ' -f1) >> $GITHUB_ENV"
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
