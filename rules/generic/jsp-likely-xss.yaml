@@ -20,8 +20,6 @@ rules:
         - JSP
     join:
       rules:
-        # https://github.com/returntocorp/semgrep-rules/pull/2868
-        # nosemgrep: yaml.semgrep.metadata-technology.metadata-technology
         - id: jsp-scriptlet-param
           languages: [generic]
           patterns:
@@ -29,8 +27,6 @@ rules:
                 <% ... %>
             - pattern: |
                 $VAR = request.getParameter(...)
-        # https://github.com/returntocorp/semgrep-rules/pull/2868
-        # nosemgrep: yaml.semgrep.metadata-technology.metadata-technology
         - id: template-vars
           languages: [generic]
           patterns:
