@@ -1,0 +1,303 @@
+rules:
+  ##########################################################################
+  # Jakarta Mail: InternetAddress primitives
+  ##########################################################################
+
+  - id: jakarta-mail-internetaddress-overloaded-ctor
+    languages: [java]
+    severity: WARNING
+    message: >-
+      InternetAddress(String, ...) constructors do NOT validate the email
+      address. They assign the address field directly. Prefer the single-arg
+      constructor + explicit validation.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: MEDIUM
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+      vulnerability_class:
+        - Improper Validation
+    pattern-either:
+      - pattern: new jakarta.mail.internet.InternetAddress($ADDR, $PERSONAL)
+      - pattern: new jakarta.mail.internet.InternetAddress($ADDR, $PERSONAL, $CHARSET)
+
+  - id: jakarta-mail-internetaddress-single-arg-validator
+    languages: [java]
+    severity: INFO
+    message: >-
+      new InternetAddress(String) parses an email for RFC compliance, but
+      should not be treated as a full security/identity check. Ensure domain
+      checks and trust decisions are not based solely on constructor success.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: MEDIUM
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+      vulnerability_class:
+        - Improper Validation
+    pattern: new jakarta.mail.internet.InternetAddress($ADDR)
+
+  ##########################################################################
+  # Jakarta Mail: MimeMessage / NewsAddress / Newsgroups usage
+  ##########################################################################
+
+  - id: jakarta-mail-mimemessage-raw-envelope-ctor
+    languages: [java]
+    severity: INFO
+    message: >-
+      MimeMessage constructed from a raw source or InputStream. Headers such
+      as From, Reply-To, Subject, and Newsgroups will be parsed using
+      InternetAddress/NewsAddress. Ensure user-controlled envelopes are
+      canonicalized and not blindly trusted.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+    pattern-either:
+      - pattern: new jakarta.mail.internet.MimeMessage($SESSION, $IS)
+      - pattern: new jakarta.mail.internet.MimeMessage($FOLDER, $IS, $MSGNUM)
+      - pattern: new jakarta.mail.internet.MimeMessage($SOURCE)
+
+  - id: jakarta-mail-mimemessage-newsgroups-recipients
+    languages: [java]
+    severity: INFO
+    message: >-
+      MimeMessage.getRecipients(Message.RecipientType.NEWSGROUPS) used.
+      Newsgroups headers may be concatenated and parsed via NewsAddress,
+      which silently normalizes malformed values. Review how this data is used.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: MEDIUM
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+    patterns:
+      - pattern: |
+          $MM.getRecipients(MimeMessage.RecipientType.NEWSGROUPS)
+      - metavariable-type:
+          metavariable: $MM
+          type: jakarta.mail.internet.MimeMessage
+
+  ##########################################################################
+  # Spring Framework mail wrappers
+  ##########################################################################
+
+  - id: spring-internetaddresseditor-usage
+    languages: [java]
+    severity: INFO
+    message: >-
+      Spring InternetAddressEditor used. This relies on Jakarta Mail parsing
+      and will decode encoded personal names (RFC 2047). Ensure the resulting
+      personal/name fields are not used as trust signals.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+    pattern: new org.springframework.mail.javamail.InternetAddressEditor(...)
+
+  - id: spring-simplemailmessage-setfrom-raw
+    languages: [java]
+    severity: INFO
+    message: >-
+      SimpleMailMessage.setFrom(...) called. If the from-address is influenced
+      by user input, be aware of encoded names and complex email syntax
+      (e.g. encoded words, group addresses, angle-bracket forms).
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+    patterns:
+      - pattern: $MSG.setFrom(...)
+      - metavariable-type:
+          metavariable: $MSG
+          type: org.springframework.mail.SimpleMailMessage
+
+  ##########################################################################
+  # Naive email domain parsing (split / lastIndexOf / endsWith)
+  ##########################################################################
+
+  - id: email-domain-split-index
+    languages: [java]
+    severity: WARNING
+    message: >-
+      Domain derived via email.split("@")[1]. This is fragile for complex,
+      RFC-compliant addresses (e.g. "\"foo@bar.com\"@example.com"). Prefer a
+      proper email parser and canonicalization for domain checks.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+    pattern: $EMAIL.split("@")[1]
+
+  - id: email-domain-lastindexof
+    languages: [java]
+    severity: WARNING
+    message: >-
+      Domain derived via substring(lastIndexOf("@") + 1). This can be tricked
+      by overloaded or encoded email addresses. Prefer a proper parser and
+      canonical form instead of manual substring logic.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+    pattern: $EMAIL.substring($EMAIL.lastIndexOf("@") + 1)
+
+  - id: email-domain-endswith
+    languages: [java]
+    severity: WARNING
+    message: >-
+      Domain/tenant derived using email.endsWith("..."). This can be bypassed
+      with addresses like tester@evil.com@trusted.com. Prefer comparing the
+      canonical domain returned by a parser.
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+    pattern-either:
+      - patterns:
+          - pattern: $EMAIL.endsWith("$SUFFIX")
+          - metavariable-regex:
+              metavariable: $SUFFIX
+              regex: ^@
+      - patterns:
+          - patterns:
+              - pattern: String $VAR = "$SUFFIX";
+              - metavariable-regex:
+                  metavariable: $SUFFIX
+                  regex: ^@
+          - pattern: $EMAIL.endsWith($VAR)
+
+  ##########################################################################
+  # Hibernate Validator: @Email annotation hotspots
+  ##########################################################################
+
+  - id: hibernate-email-annotation-field
+    languages: [java]
+    severity: INFO
+    message: >-
+      Field annotated with @Email. The default Hibernate validator is not
+      RFC 2047-aware and can accept complex syntax (e.g. "\"foo@bar.com\"@example.com").
+      Review any domain or trust logic that uses this field (split/substring/endsWith).
+    metadata:
+      cwe:
+        - 'CWE-20: Improper Input Validation'
+      owasp:
+        - A04:2021 – Insecure Design
+      references:
+        - https://elttam.com/blog/jakarta-mail-primitives/
+        - https://cwe.mitre.org/data/definitions/20.html
+        - https://owasp.org/Top10/A04_2021-Insecure_Design/
+      category: security
+      subcategory: audit
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+      technology:
+        - java
+    pattern: |-
+      @Email
+      $TYPE $STRING_VAR
