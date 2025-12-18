@@ -1,0 +1,141 @@
+rules:
+  - id: django-orm-dynamic-lookup-variable-key
+    message: >-
+      Dynamic kwargs passed into Django ORM lookup methods with a variable key.
+      Review if these keys can be attacker-controlled (e.g.
+      "user__password__contains"). This is a primary ORM Leak sink.
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/plormbing-your-django-orm/
+      category: security
+      technology:
+        - python
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages:
+      - python
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: '{..., $K: $V, ...}'
+              - pattern: '{$K: $V for $K, $V in $ARR}'
+          - metavariable-pattern:
+              metavariable: $K
+              patterns:
+                - pattern-not: '"..."'
+    pattern-sinks:
+      - pattern: $MDL.objects.filter(..., **..., ...)
+      - pattern: $MDL.objects.get(..., **..., ...)
+      - pattern: Q(..., **..., ...)
+
+
+  - id: django-orm-dynamic-lookup-kwargs
+    message: >-
+      Dynamic kwargs passed into Django ORM lookup methods. Review if these keys
+      can be attacker-controlled (e.g. "user__password__contains"). This is a
+      primary ORM Leak sink.
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/plormbing-your-django-orm/
+      category: security
+      technology:
+        - python
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages:
+      - python
+    patterns:
+      - pattern-either:
+          - pattern: $MDL.objects.filter(..., **$KW, ...)
+          - pattern: $MDL.objects.get(..., **$KW, ...)
+          - pattern: Q(..., **$KW, ...)
+      - metavariable-pattern:
+          metavariable: $KW
+          patterns:
+            - pattern-not: '{...}'
+
+
+  - id: django-filter-exposes-all-fields
+    message: >-
+      FilterSet exposes all model fields. Sensitive fields (password, tokens,
+      PII) may unintentionally become filterable via lookup operators.
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/plormbing-your-django-orm/
+      category: security
+      technology:
+        - python
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [python]
+
+    pattern: |
+      class $CLS(FilterSet):
+        class Meta:
+          model = $MODEL
+          fields = "__all__"
+
+
+  - id: django-orm-dynamic-orderby-or-values
+    message: >-
+      Dynamic field names used in order_by() or values(). Review if an attacker
+      can influence the selected or sorted fields.
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/plormbing-your-django-orm/
+      category: security
+      technology:
+        - python
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages:
+      - python
+    patterns:
+      - pattern-either:
+          - pattern: $QS.order_by(..., $ARG, ...)
+          - pattern: $QS.values(..., $ARG, ...)
+      - metavariable-pattern:
+          metavariable: $ARG
+          patterns:
+            - pattern-not: '"..."'

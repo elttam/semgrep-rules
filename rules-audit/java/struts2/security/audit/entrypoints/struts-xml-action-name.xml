@@ -1,6 +1,6 @@
 <!--
 Copied from repo: https://github.com/apache/struts-examples.git
-file:  portlet/src/main/resources/struts-view.xml  ~/work/elttam/burgerandchips/semgrep-rules-internal/rules/java/struts2/security/audit/entrypoints/struts-xml-action-name.xml
+file:  portlet/src/main/resources/struts-view.xml ~/semgrep-rules/rules-audit/java/struts2/security/audit/entrypoints/struts-xml-action-name.xml
 rev: heads/master-0-g371e480
 -->
 <?xml version="1.0" encoding="UTF-8" ?>

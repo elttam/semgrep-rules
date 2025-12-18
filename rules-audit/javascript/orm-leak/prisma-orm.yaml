@@ -1,0 +1,192 @@
+rules:
+  - id: prisma-ormleak-taint-where
+    message: >-
+      User-controlled data flows into Prisma `where`. If attackers can influence
+      nested relations/operators (contains/startsWith/etc), this can enable ORM
+      leak-style data inference.
+    severity: WARNING
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/plorming-your-primsa-orm/
+      category: security
+      technology:
+        - javascript
+        - typescript
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [javascript, typescript]
+    mode: taint
+
+    pattern-sources:
+      # Express / Fastify / Nest / Koa (common)
+      - pattern: $REQ.query
+      - pattern: $REQ.body
+      - pattern: $REQ.params
+      - pattern: $CTX.request.body
+      - pattern: $CTX.query
+      - pattern: $CTX.params
+
+      # Fetch/Next/Workers style JSON body
+      - pattern: await $REQ.json()
+      - pattern: await $REQUEST.json()
+      - pattern: await $EVENT.request.json()
+
+      # Lambda/APIGW style
+      - pattern: JSON.parse($EVENT.body)
+      - pattern: JSON.parse($INPUT.body)
+
+      # URLSearchParams (common in fetch handlers)
+      - pattern: new URL($REQ.url).searchParams
+      - pattern: new URL($REQUEST.url).searchParams
+
+    pattern-sinks:
+      - patterns:
+          - pattern: '$P.$M.$FUNC({ ..., where: $WHERE, ... })'
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: ^(find.*)
+
+  - id: prisma-orm-operator-injection
+    message: >-
+      User-controlled data flows into Prisma `where` option for a field. If
+      attackers can influence coerce the input type into an object, then they
+      could inject Prisma operators. If the Prisma query is used during an
+      authentication flow, it could result in an authentication bypass. Ensure
+      input type validation checks are performed or the equals operator is
+      explicitly used.
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/plorming-your-primsa-orm/
+      category: security
+      technology:
+        - javascript
+        - typescript
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages:
+      - javascript
+      - typescript
+    mode: taint
+    pattern-sources:
+      - pattern: $REQ.query
+      - pattern: $REQ.body
+      - pattern: $REQ.params
+      - pattern: $CTX.request.body
+      - pattern: $CTX.query
+      - pattern: $CTX.params
+      - pattern: await $REQ.json()
+      - pattern: await $REQUEST.json()
+      - pattern: await $EVENT.request.json()
+      - pattern: JSON.parse($EVENT.body)
+      - pattern: JSON.parse($INPUT.body)
+      - pattern: new URL($REQ.url).searchParams
+      - pattern: new URL($REQUEST.url).searchParams
+    pattern-sinks:
+      - patterns:
+          - pattern: '$P.$M.$FUNC({ ..., where: {..., $COL: ... , ...}, ... })'
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: ^(find.*)
+
+  - id: prisma-ormleak-taint-projection
+    message: >-
+      User-controlled data flows into Prisma `select/include`. If attackers can
+      control projection/relations, sensitive data may be exposed.
+    severity: WARNING
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/plorming-your-primsa-orm/
+      category: security
+      technology:
+        - javascript
+        - typescript
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [javascript, typescript]
+    mode: taint
+
+    pattern-sources:
+      - pattern: $REQ.query
+      - pattern: $REQ.body
+      - pattern: $CTX.request.body
+      - pattern: await $REQ.json()
+      - pattern: await $REQUEST.json()
+      - pattern: JSON.parse($EVENT.body)
+
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: '$P.$M.$FUNC({ ..., select: $SEL, ... })'
+              - pattern: '$P.$M.$FUNC({ ..., include: $INC, ... })'
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: ^(find.*)
+
+
+  - id: prisma-ormleak-taint-orderby
+    message: >-
+      User-controlled data flows into Prisma `orderBy`. Attacker-controlled order
+      fields can aid schema inference and can combine with other oracles.
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/plorming-your-primsa-orm/
+      category: security
+      technology:
+        - javascript
+        - typescript
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [javascript, typescript]
+    mode: taint
+
+    pattern-sources:
+      - pattern: $REQ.query
+      - pattern: $REQ.body
+      - pattern: $CTX.query
+      - pattern: await $REQ.json()
+      - pattern: JSON.parse($EVENT.body)
+
+    pattern-sinks:
+      - patterns:
+          - pattern: '$P.$M.$FUNC({ ..., orderBy: $OB, ... })'
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: ^(find.*)

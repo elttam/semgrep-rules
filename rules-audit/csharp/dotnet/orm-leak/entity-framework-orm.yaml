@@ -1,0 +1,141 @@
+rules:
+  - id: ef-ormleak-taint-property
+    message: >-
+      User-controlled data flows into EF.Property(). If attackers control the
+      property name, this enables dynamic field access and ORM leak-style inference.
+    severity: WARNING
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/leaking-more-than-you-joined-for/
+      category: security
+      technology:
+        - csharp
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [csharp]
+    mode: taint
+
+    pattern-sources:
+      # ASP.NET MVC / Web API
+      - pattern: $REQ.Query[$KEY]
+      - pattern: $REQ.Form[$KEY]
+      - pattern: $REQ.RouteValues[$KEY]
+
+      # Minimal APIs
+      - pattern: $CTX.Request.Query[$KEY]
+      - pattern: $CTX.Request.Form[$KEY]
+
+      # JSON binding
+      - pattern: $MODEL.$FIELD
+
+    pattern-sinks:
+      - pattern: EF.Property<$T>($X, $PROP)
+
+
+  - id: ef-ormleak-taint-dynamic-include
+    message: >-
+      User-controlled navigation path passed to Include(string). Dynamic Include
+      allows traversal of relations and can expose sensitive data.
+    severity: WARNING
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/leaking-more-than-you-joined-for/
+      category: security
+      technology:
+        - csharp
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [csharp]
+    mode: taint
+
+    pattern-sources:
+      - pattern: $REQ.Query[$KEY]
+      - pattern: $CTX.Request.Query[$KEY]
+      - pattern: $MODEL.$FIELD
+
+    pattern-sinks:
+      - pattern: $Q.Include($PATH)
+
+
+  - id: ef-ormleak-dynamic-orderby
+    message: >-
+      Dynamic OrderBy using string/expression. If understanding of property paths
+      is attacker-controlled, this can aid schema inference and leaks.
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/leaking-more-than-you-joined-for/
+      category: security
+      technology:
+        - csharp
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    severity: INFO
+    languages: [csharp]
+
+    pattern-either:
+      - pattern: $Q.OrderBy($ARG)
+      - pattern: $Q.OrderByDescending($ARG)
+
+    metavariable-pattern:
+      metavariable: $ARG
+      pattern-not: '"..."'
+
+
+  - id: ef-ormleak-dynamic-where
+    message: >-
+      Dynamic Where clause or expression tree construction. Review whether query
+      structure (property paths/operators) can be influenced by user input.
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/leaking-more-than-you-joined-for/
+      category: security
+      technology:
+        - csharp
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [csharp]
+
+    pattern-either:
+      - pattern: $Q.Where($EXPR)
+      - pattern: $Q.Where($LAMBDA)
+
+    metavariable-pattern:
+      metavariable: $EXPR
+      pattern-not: $X => $X.$PROP $OP $VAR

@@ -1,0 +1,163 @@
+rules:
+  #
+  # =============================================================================
+  # TAINT: request input -> Beego ORM query expression sinks
+  #
+  # Rationale:
+  # - Beego query expressions support relational traversal with "__" and operators
+  #   like contains/startswith/gt/etc.
+  # - If user input controls the *expression string* (field path / operator),
+  #   it can enable ORM leak-style inference.
+  # =============================================================================
+  #
+  - id: beego-ormleak-taint-dynamic-expr
+    message: >-
+      User-controlled input flows into Beego ORM query expression (Filter/Exclude/Condition.*).
+      Beego expressions support "__" traversal and operators (e.g. "__contains", "__gt"),
+      so attacker-controlled expressions can enable ORM leak-style inference.
+    severity: WARNING
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/leaking-more-than-you-joined-for/
+      category: security
+      technology:
+        - golang
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [go]
+    mode: taint
+
+    pattern-sources:
+      # Beego Controller Get* APIs read query/form inputs
+      - pattern: $CTX.Input.Query(...)
+      - pattern: $C.GetString(...)
+      - pattern: $C.GetStrings(...)
+      - pattern: $C.GetInt(...)
+      - pattern: $C.GetInt64(...)
+      - pattern: $C.GetBool(...)
+      - pattern: $C.GetFloat(...)
+
+      # Beego bind APIs (input -> struct)
+      - pattern: $C.BindJSON(...)
+      - pattern: $C.Bind(...)
+      - pattern: $C.BindForm(...)
+      - pattern: $C.BindXML(...)
+      - pattern: $C.BindYAML(...)
+
+      # Context Bind variants
+      - pattern: $CTX.Input.Bind(...)
+      - pattern: $C.Ctx.Input.Bind(...)
+
+    pattern-sinks:
+      - pattern-either:
+          # QuerySeter expression APIs
+          - pattern: $QS.Filter($EXPR, ...)
+          - pattern: $QS.Exclude($EXPR, ...)
+          - pattern: $QS.OrderBy($EXPR, ...)
+          - pattern: $QS.GroupBy($EXPR, ...)
+
+          # Condition expression APIs (not exhaustive but covers the common ones)
+          - pattern: $COND.And($EXPR, ...)
+          - pattern: $COND.Or($EXPR, ...)
+          - pattern: $COND.AndNot($EXPR, ...)
+          - pattern: $COND.OrNot($EXPR, ...)
+          - pattern: $COND.Raw($EXPR, ...)
+
+  - id: beego-ormleak-filterraw
+    message: >-
+      Beego ORM FilterRaw used. Docs warn it treats input directly as a query condition
+      and Beego performs no checks. Review carefully (can enable injection or leak oracles).
+    severity: WARNING
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/leaking-more-than-you-joined-for/
+      category: security
+      technology:
+        - golang
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [go]
+    pattern: $QS.FilterRaw($RAW, ...)
+
+
+  - id: beego-ormleak-dynamic-expr-review
+    message: >-
+      Dynamic Beego ORM expression string passed to Filter/Exclude/Condition.*.
+      Review whether the expression can include attacker-controlled "__" traversal
+      or operator suffixes (e.g. "__contains", "__gt").
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/leaking-more-than-you-joined-for/
+      category: security
+      technology:
+        - golang
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [go]
+    pattern-either:
+      - pattern: $QS.Filter($EXPR, ...)
+      - pattern: $QS.Exclude($EXPR, ...)
+      - pattern: $COND.And($EXPR, ...)
+      - pattern: $COND.Or($EXPR, ...)
+    metavariable-pattern:
+      metavariable: $EXPR
+      patterns:
+        - pattern-not: '"..."'
+
+
+  - id: beego-ormleak-dynamic-orderby-review
+    message: >-
+      Dynamic OrderBy expression. Beego supports ordering on related fields and
+      "-" prefix for descending order. Review attacker control and inference/oracle risk.
+    severity: INFO
+    metadata:
+      cwe:
+        - 'CWE-203: Observable Discrepancy'
+      owasp:
+        - A01:2021 - Broken Access Control
+      references:
+        - https://cwe.mitre.org/data/definitions/203.html
+        - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+        - https://www.elttam.com/blog/leaking-more-than-you-joined-for/
+      category: security
+      technology:
+        - golang
+      subcategory:
+        - vuln
+      likelihood: LOW
+      impact: MEDIUM
+      confidence: LOW
+    languages: [go]
+    pattern: $QS.OrderBy($EXPR, ...)
+    metavariable-pattern:
+      metavariable: $EXPR
+      patterns:
+        - pattern-not: '"..."'
