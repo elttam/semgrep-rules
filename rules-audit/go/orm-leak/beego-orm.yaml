@@ -122,15 +122,16 @@ rules:
       impact: MEDIUM
       confidence: LOW
     languages: [go]
-    pattern-either:
-      - pattern: $QS.Filter($EXPR, ...)
-      - pattern: $QS.Exclude($EXPR, ...)
-      - pattern: $COND.And($EXPR, ...)
-      - pattern: $COND.Or($EXPR, ...)
-    metavariable-pattern:
-      metavariable: $EXPR
-      patterns:
-        - pattern-not: '"..."'
+    patterns:
+      - pattern-either:
+          - pattern: $QS.Filter($EXPR, ...)
+          - pattern: $QS.Exclude($EXPR, ...)
+          - pattern: $COND.And($EXPR, ...)
+          - pattern: $COND.Or($EXPR, ...)
+      - metavariable-pattern:
+          metavariable: $EXPR
+          patterns:
+            - pattern-not: '"..."'
 
 
   - id: beego-ormleak-dynamic-orderby-review
@@ -156,8 +157,9 @@ rules:
       impact: MEDIUM
       confidence: LOW
     languages: [go]
-    pattern: $QS.OrderBy($EXPR, ...)
-    metavariable-pattern:
-      metavariable: $EXPR
-      patterns:
-        - pattern-not: '"..."'
+    patterns:
+      - pattern: $QS.OrderBy($EXPR, ...)
+      - metavariable-pattern:
+          metavariable: $EXPR
+          patterns:
+            - pattern-not: '"..."'
