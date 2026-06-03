@@ -1,0 +1,97 @@
+rules:
+  # ---- broad audit rule (unchanged logic; INFO so it doesn't dominate CI) ----
+  - id: len-cast-to-narrow-int-overflow
+    message: >-
+      The result of len() is cast to a narrower fixed-width integer
+      (uint32/int32/uint16/int16/uint8/int8). len() returns int (64-bit on
+      amd64/arm64), so a length above the target type's max silently wraps. This
+      is benign for in-memory counts/sizes but dangerous when the value becomes a
+      length/size field in a binary or wire format, where a truncated length
+      desynchronises the parser from the payload (data smuggling / boundary
+      confusion). Validate the length before casting, or keep the full-width value
+      and reject oversized input.
+
+      NOTE: this broad rule fires on every narrowing len() cast and is INFO/audit.
+      For the dangerous subset, see len-cast-into-binary-length-prefix below.
+    languages: [go]
+    severity: INFO
+    patterns:
+      - pattern-either:
+          - pattern: uint32(len($X))
+          - pattern: int32(len($X))
+          - pattern: uint16(len($X))
+          - pattern: int16(len($X))
+          - pattern: uint8(len($X))
+          - pattern: int8(len($X))
+      - pattern-not-inside: |
+          if len($X) > $MAX { ... }
+          ...
+      - pattern-not-inside: |
+          if len($X) <= $MAX { ... }
+          ...
+      - pattern-not-inside: |
+          if len($X) >= $MAX { ... }
+          ...
+      - pattern-not-inside: |
+          if $LEN := len($X); $LEN > $MAX { ... }
+          ...
+    metadata:
+      cwe:
+        - "CWE-190: Integer Overflow or Wraparound"
+      owasp:
+        - A03:2021 - Injection
+      category: security
+      subcategory: [audit]
+      confidence: LOW
+      likelihood: LOW
+      impact: MEDIUM
+      technology: [go]
+      references:
+        - https://github.com/tinylib/msgp/blob/v1.5.0/msgp/write.go
+        - https://blog.trailofbits.com/2025/12/31/detect-gos-silent-arithmetic-bugs-with-go-panikint/
+
+  # ---- high-signal companion: cast feeds a binary length prefix ----
+  - id: len-cast-into-binary-length-prefix
+    message: >-
+      A narrowing cast of len() is written as a binary length prefix via
+      encoding/binary, then the corresponding payload is emitted. This is the
+      exploitable shape from the msgp/DEF CON 32 class: if the length exceeds the
+      narrow type's max it wraps, the on-wire length field desynchronises from the
+      actual payload, and a downstream parser can be smuggled extra/short data.
+      Bound the length against the type max (or the protocol limit) before writing
+      it, and reject oversized payloads.
+    languages: [go]
+    severity: WARNING
+    patterns:
+      - pattern-either:
+          - pattern: binary.$ORDER.PutUint32($BUF, uint32(len($X)))
+          - pattern: binary.$ORDER.PutUint16($BUF, uint16(len($X)))
+          - pattern: binary.Write($W, $ORDER, uint32(len($X)))
+          - pattern: binary.Write($W, $ORDER, uint16(len($X)))
+      - pattern-not-inside: |
+          if len($X) > $MAX { ... }
+          ...
+      - pattern-not-inside: |
+          if len($X) <= $MAX { ... }
+          ...
+      - pattern-not-inside: |
+          if len($X) >= $MAX { ... }
+          ...
+    metadata:
+      cwe:
+        - "CWE-190: Integer Overflow or Wraparound"
+      owasp:
+        - A03:2021 - Injection
+      category: security
+      subcategory: [vuln]
+      confidence: MEDIUM
+      likelihood: LOW
+      impact: HIGH
+      technology: [go]
+      references:
+        - https://media.defcon.org/DEF%20CON%2032/DEF%20CON%2032%20presentations/
+        - https://github.com/tinylib/msgp/blob/v1.5.0/msgp/write.go
+      # v2: split out from the broad rule. Real-code runs showed every genuine
+      # bug-shape (moby stdcopy, k8s framer, minio s3select/grid, caddy fastcgi)
+      # writes the cast as a binary length prefix; the ~100 benign hits were
+      # in-memory counts that never reach encoding/binary.

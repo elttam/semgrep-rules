@@ -1,0 +1,112 @@
+rules:
+  - id: net-url-pointer-alias-mutation
+    message: >-
+      A *url.URL pointer held in a variable or field is aliased (not copied) and
+      then a field of it is mutated. Assigning a *url.URL copies the pointer, not
+      the struct, so the write mutates the shared original. If that original is
+      package-level, a struct field, or otherwise shared across requests or
+      goroutines, this corrupts the URL seen elsewhere (open-redirect /
+      parameter-smuggling / data race).
+
+      This rule only fires when the alias source is a bare identifier (e.g.
+      `u := s.someURL`) — the shape most likely to be a shared pointer. It does
+      NOT fire on fresh allocations, which are safe: value composite literals
+      (`url.URL{}`), dereference copies (`*p`), or any function/method call result
+      (`url.Parse(...)`, `r.URL()`, `x.Copy()`, `ResolveReference(...)`), because
+      those return a new value/struct that is not shared.
+
+      Fix: copy the struct (`u := *original`) or build a fresh &url.URL{...}.
+    languages: [go]
+    severity: INFO
+    patterns:
+      - pattern-inside: |
+          import "net/url"
+          ...
+      # alias source must be a bare identifier (var or selector), not an allocation
+      - pattern: $U := $SRC
+      - metavariable-pattern:
+          metavariable: $SRC
+          patterns:
+            - pattern-not: "*$X"               # deref copy - safe
+            - pattern-not: "$T{...}"           # value composite literal - safe (fresh)
+            - pattern-not: "&$T{...}"          # pointer composite literal - safe (fresh)
+            - pattern-not: "$F(...)"           # function-call result - safe (fresh)
+            - pattern-not: "$R.$M(...)"        # method-call result (.Copy()/.URL()/ResolveReference) - safe (fresh)
+            - pattern-not: "$R[...]"           # index expression
+      # a url.URL-distinctive field is then mutated on the alias
+      - pattern-either:
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.RawQuery = $V
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.Path = $V
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.Host = $V
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.Scheme = $V
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.RawPath = $V
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.Fragment = $V
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.RawFragment = $V
+      # confirm $U is used as a url.URL (distinctive method or raw field write)
+      - pattern-either:
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.Query()
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.String()
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.Hostname()
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.Redacted()
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.ResolveReference(...)
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.RawQuery = $W
+          - pattern-inside: |
+              $U := $SRC
+              ...
+              $U.RawPath = $W
+    metadata:
+      cwe:
+        - "CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')"
+      owasp:
+        - A01:2021 - Broken Access Control
+      category: security
+      subcategory:
+        - audit
+      confidence: LOW
+      likelihood: LOW
+      impact: MEDIUM
+      technology:
+        - go
+      references:
+        - https://pkg.go.dev/net/url#URL
+      # v2: narrowed to bare-identifier sources after real-code runs showed ~13:1
+      # false positives from value literals, call results, and .Copy() idioms.

@@ -1,0 +1,59 @@
+rules:
+  - id: gorilla-cookiestore-default-samesite-none
+    message: >-
+      gorilla/sessions.NewCookieStore (and NewFilesystemStore) initialise
+      Options.SameSite to http.SameSiteNoneMode by default, which allows the
+      session cookie to be sent on cross-site requests and removes a key CSRF
+      defence. The existing session-cookie-samesitenone rule only catches an
+      explicit &sessions.Options{SameSite: http.SameSiteNoneMode}; this insecure
+      value is also the silent default when you never set Options at all.
+      After NewCookieStore, explicitly set store.Options.SameSite to
+      http.SameSiteLaxMode or http.SameSiteStrictMode.
+    languages: [go]
+    severity: WARNING
+    patterns:
+      - pattern-either:
+          - pattern: $STORE := sessions.NewCookieStore(...)
+          - pattern: $STORE = sessions.NewCookieStore(...)
+          - pattern: $STORE := sessions.NewFilesystemStore(...)
+          - pattern: $STORE = sessions.NewFilesystemStore(...)
+      # the store's SameSite is never overridden afterwards
+      - pattern-not-inside: |
+          $STORE := sessions.NewCookieStore(...)
+          ...
+          $STORE.Options.SameSite = $V
+      - pattern-not-inside: |
+          $STORE = sessions.NewCookieStore(...)
+          ...
+          $STORE.Options.SameSite = $V
+      - pattern-not-inside: |
+          $STORE := sessions.NewCookieStore(...)
+          ...
+          $STORE.Options = $OPTS
+      - pattern-not-inside: |
+          $STORE := sessions.NewFilesystemStore(...)
+          ...
+          $STORE.Options.SameSite = $V
+      - pattern-not-inside: |
+          $STORE := sessions.NewFilesystemStore(...)
+          ...
+          $STORE.Options = $OPTS
+    metadata:
+      cwe:
+        - "CWE-1275: Sensitive Cookie with Improper SameSite Attribute"
+      owasp:
+        - A05:2021 - Security Misconfiguration
+        - A02:2025 - Security Misconfiguration
+      category: security
+      subcategory:
+        - audit
+      confidence: LOW
+      likelihood: LOW
+      impact: MEDIUM
+      technology:
+        - gorilla
+      references:
+        - https://github.com/gorilla/sessions/blob/v1.4.0/store.go#L59
+      # v2: logic unchanged. 0 hits across 34 scanned projects because none call
+      # sessions.NewCookieStore in-tree; validate against code-search-sourced
+      # consumers (application code, not libraries) rather than flagship repos.

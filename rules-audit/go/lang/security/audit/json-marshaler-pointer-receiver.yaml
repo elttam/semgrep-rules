@@ -1,0 +1,41 @@
+rules:
+  - id: json-marshaler-pointer-receiver
+    message: >-
+      MarshalJSON is defined on a pointer receiver (*$T). Because encoding/json
+      resolves json.Marshaler via reflection under strict method-set rules, a
+      pointer-receiver MarshalJSON is NOT in the method set of the value type $T.
+      Encoding a value of $T (or a struct containing a $T field) by value silently
+      skips the custom marshaller and uses default marshalling. If the marshaller
+      performs redaction/masking/field-omission, that protection disappears
+      silently.
+
+      AUDIT NOTE: this only becomes a bug if the type is somewhere encoded BY
+      VALUE. On large codebases most pointer-receiver MarshalJSON are always
+      encoded by pointer and therefore safe — this rule fires broadly and is
+      intended as an audit aid, not a finding. To resolve a hit, check whether
+      the type is ever passed by value to json.Marshal/Encode. Fix by moving
+      MarshalJSON to a value receiver, or always storing/encoding a pointer.
+    languages: [go]
+    severity: INFO
+    patterns:
+      - pattern: |
+          func ($RECV *$T) MarshalJSON() ([]byte, error) { ... }
+    metadata:
+      cwe:
+        - "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      owasp:
+        - A01:2021 - Broken Access Control
+      category: security
+      subcategory:
+        - audit
+      confidence: LOW
+      likelihood: LOW
+      impact: MEDIUM
+      technology:
+        - go
+      references:
+        - https://github.com/golang/go/issues/22967
+        - https://go.dev/wiki/MethodSets
+      # v2: downgraded WARNING -> INFO. Real-code runs: 78 hits on consul, 44/31
+      # across other batches, essentially all benign (type always encoded by
+      # pointer). Audit-surfacing only; per-hit by-value check required.

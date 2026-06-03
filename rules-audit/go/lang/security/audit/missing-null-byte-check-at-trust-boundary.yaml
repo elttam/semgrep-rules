@@ -1,0 +1,113 @@
+rules:
+  - id: missing-null-byte-check-at-trust-boundary
+    message: >-
+      A string is compared against a PRIVILEGED account name (admin/root/etc.)
+      and then passed to a C-interop / LDAP / exec sink in the same function,
+      with no null-byte rejection. Go strings may contain \x00; C-style consumers
+      truncate at the first null byte. An input like "admin\x00x" fails the Go
+      equality check yet resolves to "admin" past the boundary, bypassing the
+      gate. Reject null bytes (strings.ContainsRune(s, 0) / strings.IndexByte(s,
+      0) != -1) before any comparison or interop call at the trust boundary.
+
+      v2: the gate must compare against a non-empty privileged-looking literal
+      (not `== ""` or arbitrary config values), and the sink must be a real C
+      call, os/exec, or a named LDAP/PAM package — narrowed after real-code runs
+      where empty-string defaults and cloud-SDK method names produced false
+      positives.
+    languages: [go]
+    severity: INFO
+    patterns:
+      - pattern-inside: |
+          func $FN(..., $S string, ...) $RET {
+            ...
+          }
+      # gate: equality against a PRIVILEGED literal (not "" or generic config values)
+      - pattern-either:
+          - pattern-inside: |
+              func $FN2(...) $RET2 {
+                ...
+                if $S == "$PRIV" { ... }
+                ...
+              }
+          - pattern-inside: |
+              func $FN2(...) $RET2 {
+                ...
+                if $S == "$PRIV" || ... { ... }
+                ...
+              }
+          - pattern-inside: |
+              func $FN2(...) $RET2 {
+                ...
+                if ... || $S == "$PRIV" { ... }
+                ...
+              }
+      - metavariable-regex:
+          metavariable: $PRIV
+          regex: ^(?i)(admin|administrator|root|superuser|super-user|superadmin|sudo|wheel|sysadmin|operator|privileged)$
+      # sink: real C-interop, os/exec, or named LDAP/PAM packages only
+      - pattern-either:
+          - pattern: C.$CFUNC(...)
+          - pattern: exec.Command($S, ...)
+          - pattern: exec.CommandContext($CTX, $S, ...)
+          - pattern: ldap.EscapeFilter(...)
+          - pattern: $LDAP.Search(...)
+          - pattern: $LDAP.Bind(...)
+          - pattern: pam.$PAMFUNC(...)
+      # no null-byte guard anywhere in the function
+      - pattern-not-inside: |
+          func $FN(...) $RET {
+            ...
+            if strings.ContainsRune(...) { ... }
+            ...
+          }
+      - pattern-not-inside: |
+          func $FN(...) $RET {
+            ...
+            if strings.ContainsRune(...) || ... { ... }
+            ...
+          }
+      - pattern-not-inside: |
+          func $FN(...) $RET {
+            ...
+            if ... || strings.ContainsRune(...) { ... }
+            ...
+          }
+      - pattern-not-inside: |
+          func $FN(...) $RET {
+            ...
+            if strings.ContainsAny(...) { ... }
+            ...
+          }
+      - pattern-not-inside: |
+          func $FN(...) $RET {
+            ...
+            if strings.IndexByte(...) != -1 { ... }
+            ...
+          }
+      - pattern-not-inside: |
+          func $FN(...) $RET {
+            ...
+            if strings.IndexByte(...) >= 0 { ... }
+            ...
+          }
+      - pattern-not-inside: |
+          func $FN(...) $RET {
+            ...
+            if strings.Contains($X, "\x00") { ... }
+            ...
+          }
+    metadata:
+      cwe:
+        - "CWE-158: Improper Neutralization of Null Byte or NUL Character"
+      owasp:
+        - A07:2021 - Identification and Authentication Failures
+      category: security
+      subcategory:
+        - audit
+      confidence: LOW
+      likelihood: LOW
+      impact: HIGH
+      technology:
+        - go
+      references:
+        - https://www.elttam.com/blog/golang-codereview

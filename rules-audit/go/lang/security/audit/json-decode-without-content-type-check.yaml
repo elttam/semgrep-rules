@@ -1,0 +1,119 @@
+rules:
+  - id: json-decode-without-content-type-check
+    message: >-
+      An HTTP handler decodes the request body as JSON without validating the
+      Content-Type header. Browsers send no CORS preflight for "simple" requests
+      using text/plain or application/x-www-form-urlencoded, so a cross-site HTML
+      form can POST a body the server parses as JSON (encoding/json also ignores
+      trailing bytes, so a form's trailing "=" doesn't break parsing). With cookie
+      auth this is exploitable as CSRF. Reject requests whose Content-Type is not
+      application/json, and/or wrap handlers with http.CrossOriginProtection
+      (Go 1.25+).
+
+      v2: handler matching widened to cover method receivers, extra parameters
+      (e.g. ctx), and common framework handler signatures (gin, echo, chi/std) —
+      the std-only two-arg pattern missed real handlers like
+      func (h *T) handleWrite(w, r, ctx) found in production code.
+    languages: [go]
+    severity: WARNING
+    patterns:
+      # the body is decoded as JSON from the request
+      - pattern-either:
+          - pattern: json.NewDecoder($R.Body).Decode($X)
+          - patterns:
+              - pattern: $DEC.Decode($X)
+              - pattern-inside: |
+                  $DEC := json.NewDecoder($R.Body)
+                  ...
+          - patterns:
+              - pattern: $DEC.Decode($X)
+              - pattern-inside: |
+                  $DEC := json.NewDecoder($C.Request().Body)
+                  ...
+          - pattern: json.NewDecoder($C.Request().Body).Decode($X)
+      # inside some handler-shaped function (std, method, extra params, or framework)
+      - pattern-either:
+          - pattern-inside: |
+              func $H(..., $W http.ResponseWriter, $R *http.Request, ...) { ... }
+          - pattern-inside: |
+              func ($RT) $H(..., $W http.ResponseWriter, $R *http.Request, ...) { ... }
+          - pattern-inside: |
+              func $H($C echo.Context) error { ... }
+          - pattern-inside: |
+              func ($RT) $H($C echo.Context) error { ... }
+          - pattern-inside: |
+              func $H($C *gin.Context) { ... }
+          - pattern-inside: |
+              func ($RT) $H($C *gin.Context) { ... }
+      # no Content-Type validation anywhere in the enclosing function
+      - pattern-not-inside: |
+          func $H(...) {
+            ...
+            $R.Header.Get("Content-Type")
+            ...
+          }
+      - pattern-not-inside: |
+          func ($RT) $H(...) {
+            ...
+            $R.Header.Get("Content-Type")
+            ...
+          }
+      - pattern-not-inside: |
+          func $H(...) $RET {
+            ...
+            $R.Header.Get("Content-Type")
+            ...
+          }
+      - pattern-not-inside: |
+          func ($RT) $H(...) $RET {
+            ...
+            $R.Header.Get("Content-Type")
+            ...
+          }
+      - pattern-not-inside: |
+          func $H(...) $RET {
+            ...
+            $R.Header.Values("Content-Type")
+            ...
+          }
+      - pattern-not-inside: |
+          func $H(...) $RET {
+            ...
+            $C.Request().Header.Get("Content-Type")
+            ...
+          }
+      - pattern-not-inside: |
+          func $H(...) $RET {
+            ...
+            $C.GetHeader("Content-Type")
+            ...
+          }
+      - pattern-not-inside: |
+          func $H(...) $RET {
+            ...
+            $C.ContentType()
+            ...
+          }
+      - pattern-not-inside: |
+          func $H(...) $RET {
+            ...
+            $C.Bind($Y)
+            ...
+          }
+    metadata:
+      cwe:
+        - "CWE-352: Cross-Site Request Forgery (CSRF)"
+      owasp:
+        - A01:2021 - Broken Access Control
+      category: security
+      subcategory:
+        - audit
+      confidence: LOW
+      likelihood: LOW
+      impact: MEDIUM
+      technology:
+        - go
+        - net/http
+      references:
+        - https://pkg.go.dev/net/http#CrossOriginProtection
+        - https://pkg.go.dev/encoding/json#Decoder.Decode
