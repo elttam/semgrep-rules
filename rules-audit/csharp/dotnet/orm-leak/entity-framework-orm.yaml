@@ -98,14 +98,14 @@ rules:
       confidence: LOW
     severity: INFO
     languages: [csharp]
-
-    pattern-either:
-      - pattern: $Q.OrderBy($ARG)
-      - pattern: $Q.OrderByDescending($ARG)
-
-    metavariable-pattern:
-      metavariable: $ARG
-      pattern-not: '"..."'
+    patterns:
+      - pattern-either:
+          - pattern: $Q.OrderBy($ARG)
+          - pattern: $Q.OrderByDescending($ARG)
+      - metavariable-pattern:
+          metavariable: $ARG
+          patterns:
+            - pattern-not: '"..."'
 
 
   - id: ef-ormleak-dynamic-where
@@ -131,11 +131,11 @@ rules:
       impact: MEDIUM
       confidence: LOW
     languages: [csharp]
-
-    pattern-either:
-      - pattern: $Q.Where($EXPR)
-      - pattern: $Q.Where($LAMBDA)
-
-    metavariable-pattern:
-      metavariable: $EXPR
-      pattern-not: $X => $X.$PROP $OP $VAR
+    patterns:
+      - pattern-either:
+          - pattern: $Q.Where($EXPR)
+          - pattern: $Q.Where($LAMBDA)
+      - metavariable-pattern:
+          metavariable: $EXPR
+          patterns:
+            - pattern-not: $X => $X.$PROP $OP $VAR
